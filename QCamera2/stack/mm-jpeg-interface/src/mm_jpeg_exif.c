@@ -304,7 +304,7 @@ int process_sensor_data(cam_sensor_params_t *p_sensor_params,
     return 0;
   }
 
-  CDBG("%s:%d] From metadata aperture = %f ", __func__, __LINE__,
+  LOGD("%s:%d] From metadata aperture = %f ", __func__, __LINE__,
     p_sensor_params->aperture_value );
 
   if (p_sensor_params->aperture_value >= 1.0) {
@@ -333,7 +333,7 @@ int process_sensor_data(cam_sensor_params_t *p_sensor_params,
   } else {
     flash_fired = 0;
   }
-  CDBG("%s: Flash value %d flash mode %d flash state %d", __func__, val_short,
+  LOGD("%s: Flash value %d flash mode %d flash state %d", __func__, val_short,
     p_sensor_params->flash_mode, p_sensor_params->flash_state);
 
   switch(p_sensor_params->flash_mode) {
@@ -410,7 +410,7 @@ int process_3a_data(cam_3a_params_t *p_3a_params, QOMX_EXIF_INFO *exif_info)
     return 0;
   }
 
-  CDBG("%s:%d] exp_time %f, iso_value %d, wb_mode %d", __func__, __LINE__,
+  LOGD("%s:%d] exp_time %f, iso_value %d, wb_mode %d", __func__, __LINE__,
     p_3a_params->exp_time, p_3a_params->iso_value, p_3a_params->wb_mode);
 
   /*Exposure time*/
@@ -421,7 +421,7 @@ int process_3a_data(cam_3a_params_t *p_3a_params, QOMX_EXIF_INFO *exif_info)
       val_rat.num = 1;
       val_rat.denom = ROUND(1.0/p_3a_params->exp_time);
   }
-  CDBG("%s: numer %d denom %d %zd", __func__, val_rat.num, val_rat.denom,
+  LOGD("%s: numer %d denom %d %zd", __func__, val_rat.num, val_rat.denom,
       sizeof(val_rat) / (8));
 
   rc = addExifEntry(exif_info, EXIFTAGID_EXPOSURE_TIME, EXIF_RATIONAL,
@@ -499,7 +499,7 @@ int process_3a_data(cam_3a_params_t *p_3a_params, QOMX_EXIF_INFO *exif_info)
         ALOGE("%s:%d]: Error adding Exif Entry", __func__, __LINE__);
       }
 
-     CDBG("%s:%d] brightness %f", __func__, __LINE__,
+     LOGD("%s:%d] brightness %f", __func__, __LINE__,
        p_3a_params->brightness);
 
     /* Brightness Value*/

@@ -47,12 +47,12 @@ extern "C" {
 #ifdef CDBG
 #undef CDBG
 #endif //#ifdef CDBG
-#define CDBG(fmt, args...) ALOGD_IF(gCamHal3LogLevel >= 2, fmt, ##args)
+#define LOGD(fmt, args...) ALOGD_IF(gCamHal3LogLevel >= 2, fmt, ##args)
 
 #ifdef CDBG_HIGH
 #undef CDBG_HIGH
 #endif //#ifdef CDBG_HIGH
-#define CDBG_HIGH(fmt, args...) ALOGD_IF(gCamHal3LogLevel >= 1, fmt, ##args)
+#define LOGH(fmt, args...) ALOGD_IF(gCamHal3LogLevel >= 1, fmt, ##args)
 
 #ifdef CDBG_FATAL_IF
 #undef CDBG_FATAL_IF

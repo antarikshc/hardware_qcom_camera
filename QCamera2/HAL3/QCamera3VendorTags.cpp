@@ -257,7 +257,7 @@ void QCamera3VendorTags::get_all_tags(
             i < sizeof(qcamera3_all_tags)/sizeof(qcamera3_all_tags[0]);
             i++) {
         g_array[i] = qcamera3_all_tags[i];
-        CDBG("%s: g_array[%d] is %d", __func__, i, g_array[i]);
+        LOGD("%s: g_array[%d] is %d", __func__, i, g_array[i]);
     }
 }
 

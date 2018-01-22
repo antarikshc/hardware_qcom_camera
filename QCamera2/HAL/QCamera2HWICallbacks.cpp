@@ -61,7 +61,7 @@ void QCamera2HardwareInterface::zsl_channel_cb(mm_camera_super_buf_t *recvd_fram
                                                void *userdata)
 {
     ATRACE_CALL();
-    CDBG_HIGH("[KPI Perf] %s: E",__func__);
+    LOGH("[KPI Perf] %s: E",__func__);
     char value[PROPERTY_VALUE_MAX];
     bool dump_raw = false;
     bool dump_yuv = false;
@@ -88,7 +88,7 @@ void QCamera2HardwareInterface::zsl_channel_cb(mm_camera_super_buf_t *recvd_fram
         return;
     }
 
-    CDBG_HIGH("%s: [ZSL Retro] Frame CB Unlock : %d, is AEC Locked: %d",
+    LOGH("%s: [ZSL Retro] Frame CB Unlock : %d, is AEC Locked: %d",
           __func__, recvd_frame->bUnlockAEC, pme->m_bLedAfAecLock);
     if(recvd_frame->bUnlockAEC && pme->m_bLedAfAecLock) {
         qcamera_sm_internal_evt_payload_t *payload =
@@ -112,7 +112,7 @@ void QCamera2HardwareInterface::zsl_channel_cb(mm_camera_super_buf_t *recvd_fram
     // ready to go ahead with LED estimation for regular frames
     if (recvd_frame->bReadyForPrepareSnapshot) {
       // Send an event
-      CDBG_HIGH("%s: [ZSL Retro] Ready for Prepare Snapshot, signal ", __func__);
+      LOGH("%s: [ZSL Retro] Ready for Prepare Snapshot, signal ", __func__);
       qcamera_sm_internal_evt_payload_t *payload =
          (qcamera_sm_internal_evt_payload_t *)malloc(sizeof(qcamera_sm_internal_evt_payload_t));
       if (NULL != payload) {
@@ -255,12 +255,12 @@ void QCamera2HardwareInterface::zsl_channel_cb(mm_camera_super_buf_t *recvd_fram
     property_get("persist.camera.zsl_matching", value, "0");
     log_matching = atoi(value) > 0 ? true : false;
     if (log_matching) {
-        CDBG_HIGH("%s : ZSL super buffer contains:", __func__);
+        LOGH("%s : ZSL super buffer contains:", __func__);
         QCameraStream *pStream = NULL;
         for (uint32_t i = 0; i < frame->num_bufs; i++) {
             pStream = pChannel->getStreamByHandle(frame->bufs[i]->stream_id);
             if (pStream != NULL ) {
-                CDBG_HIGH("%s: Buffer with V4L index %d frame index %d of type %d Timestamp: %ld %ld ",
+                LOGH("%s: Buffer with V4L index %d frame index %d of type %d Timestamp: %ld %ld ",
                         __func__,
                         frame->bufs[i]->buf_idx,
                         frame->bufs[i]->frame_idx,
@@ -277,7 +277,7 @@ void QCamera2HardwareInterface::zsl_channel_cb(mm_camera_super_buf_t *recvd_fram
     // send to postprocessor
     pme->m_postprocessor.processData(frame);
 
-    CDBG_HIGH("[KPI Perf] %s: X", __func__);
+    LOGH("[KPI Perf] %s: X", __func__);
 }
 
 /*===========================================================================
@@ -385,7 +385,7 @@ void QCamera2HardwareInterface::capture_channel_cb_routine(mm_camera_super_buf_t
 {
     ATRACE_CALL();
     char value[PROPERTY_VALUE_MAX];
-    CDBG_HIGH("[KPI Perf] %s: E PROFILE_YUV_CB_TO_HAL", __func__);
+    LOGH("[KPI Perf] %s: E PROFILE_YUV_CB_TO_HAL", __func__);
     QCamera2HardwareInterface *pme = (QCamera2HardwareInterface *)userdata;
     if (pme == NULL ||
         pme->mCameraHandle == NULL ||
@@ -464,9 +464,9 @@ void QCamera2HardwareInterface::capture_channel_cb_routine(mm_camera_super_buf_t
             main_stream->getFormat(config.input_fmt);
             main_stream->getFrameDimension(config.input_dim);
             main_stream->getFrameOffset(config.input_buf_planes.plane_info);
-            CDBG_HIGH("DEBUG: registerFaceImage E");
+            LOGH("DEBUG: registerFaceImage E");
             int32_t rc = pme->registerFaceImage(main_frame->buffer, &config, faceId);
-            CDBG_HIGH("DEBUG: registerFaceImage X, ret=%d, faceId=%d", rc, faceId);
+            LOGH("DEBUG: registerFaceImage X, ret=%d, faceId=%d", rc, faceId);
             bRunFaceReg = 0;
         }
     }
@@ -474,7 +474,7 @@ void QCamera2HardwareInterface::capture_channel_cb_routine(mm_camera_super_buf_t
 #endif
 /* END of test register face image for face authentication */
 
-    CDBG_HIGH("[KPI Perf] %s: X", __func__);
+    LOGH("[KPI Perf] %s: X", __func__);
 }
 
 /*===========================================================================
@@ -497,7 +497,7 @@ void QCamera2HardwareInterface::postproc_channel_cb_routine(mm_camera_super_buf_
                                                             void *userdata)
 {
     ATRACE_CALL();
-    CDBG_HIGH("[KPI Perf] %s: E", __func__);
+    LOGH("[KPI Perf] %s: E", __func__);
     QCamera2HardwareInterface *pme = (QCamera2HardwareInterface *)userdata;
     if (pme == NULL ||
         pme->mCameraHandle == NULL ||
@@ -519,7 +519,7 @@ void QCamera2HardwareInterface::postproc_channel_cb_routine(mm_camera_super_buf_
     pme->m_postprocessor.processPPData(frame);
 
     ATRACE_INT("Camera:Reprocess", 0);
-    CDBG_HIGH("[KPI Perf] %s: X", __func__);
+    LOGH("[KPI Perf] %s: X", __func__);
 }
 
 /*===========================================================================
@@ -546,7 +546,7 @@ void QCamera2HardwareInterface::preview_stream_cb_routine(mm_camera_super_buf_t 
                                                           void *userdata)
 {
     ATRACE_CALL();
-    CDBG_HIGH("[KPI Perf] %s : BEGIN", __func__);
+    LOGH("[KPI Perf] %s : BEGIN", __func__);
     int err = NO_ERROR;
     QCamera2HardwareInterface *pme = (QCamera2HardwareInterface *)userdata;
     QCameraGrallocMemory *memory = (QCameraGrallocMemory *)super_frame->bufs[0]->mem_info;
@@ -589,10 +589,10 @@ void QCamera2HardwareInterface::preview_stream_cb_routine(mm_camera_super_buf_t 
     }
 
     // Display the buffer.
-    CDBG("%p displayBuffer %d E", pme, idx);
+    LOGD("%p displayBuffer %d E", pme, idx);
     int dequeuedIdx = memory->displayBuffer(idx);
     if (dequeuedIdx < 0 || dequeuedIdx >= memory->getCnt()) {
-        CDBG_HIGH("%s: Invalid dequeued buffer index %d from display",
+        LOGH("%s: Invalid dequeued buffer index %d from display",
               __func__, dequeuedIdx);
     } else {
         // Return dequeued buffer back to driver
@@ -613,7 +613,7 @@ void QCamera2HardwareInterface::preview_stream_cb_routine(mm_camera_super_buf_t 
     }
 
     free(super_frame);
-    CDBG_HIGH("[KPI Perf] %s : END", __func__);
+    LOGH("[KPI Perf] %s : END", __func__);
     return;
 }
 
@@ -806,7 +806,7 @@ void QCamera2HardwareInterface::nodisplay_preview_stream_cb_routine(
                                                           void * userdata)
 {
     ATRACE_CALL();
-    CDBG_HIGH("[KPI Perf] %s E",__func__);
+    LOGH("[KPI Perf] %s E",__func__);
     QCamera2HardwareInterface *pme = (QCamera2HardwareInterface *)userdata;
     if (pme == NULL ||
         pme->mCameraHandle == NULL ||
@@ -824,7 +824,7 @@ void QCamera2HardwareInterface::nodisplay_preview_stream_cb_routine(
     }
 
     if (!pme->needProcessPreviewFrame()) {
-        CDBG_HIGH("%s: preview is not running, no need to process", __func__);
+        LOGH("%s: preview is not running, no need to process", __func__);
         stream->bufDone(frame->buf_idx);
         free(super_frame);
         return;
@@ -863,7 +863,7 @@ void QCamera2HardwareInterface::nodisplay_preview_stream_cb_routine(
         }
     }
     free(super_frame);
-    CDBG_HIGH("[KPI Perf] %s X",__func__);
+    LOGH("[KPI Perf] %s X",__func__);
 }
 
 /*===========================================================================
@@ -888,7 +888,7 @@ void QCamera2HardwareInterface::rdi_mode_stream_cb_routine(
   void * userdata)
 {
     ATRACE_CALL();
-    CDBG_HIGH("RDI_DEBUG %s[%d]: Enter", __func__, __LINE__);
+    LOGH("RDI_DEBUG %s[%d]: Enter", __func__, __LINE__);
     QCamera2HardwareInterface *pme = (QCamera2HardwareInterface *)userdata;
     if (pme == NULL ||
         pme->mCameraHandle == NULL ||
@@ -975,13 +975,13 @@ void QCamera2HardwareInterface::rdi_mode_stream_cb_routine(
             cbArg.release_cb = returnStreamBuffer;
             pme->m_cbNotifier.notifyCallback(cbArg);
         } else {
-            CDBG_HIGH("%s: No need to process preview frame, return buffer", __func__);
+            LOGH("%s: No need to process preview frame, return buffer", __func__);
             stream->bufDone(frame->buf_idx);
         }
     }
 end:
     free(super_frame);
-    CDBG_HIGH("RDI_DEBUG %s[%d]: Exit", __func__, __LINE__);
+    LOGH("RDI_DEBUG %s[%d]: Exit", __func__, __LINE__);
     return;
 }
 
@@ -1020,7 +1020,7 @@ void QCamera2HardwareInterface::postview_stream_cb_routine(mm_camera_super_buf_t
         return;
     }
 
-    CDBG_HIGH("[KPI Perf] %s : BEGIN", __func__);
+    LOGH("[KPI Perf] %s : BEGIN", __func__);
 
     mm_camera_buf_def_t *frame = super_frame->bufs[0];
     if (NULL == frame) {
@@ -1041,7 +1041,7 @@ void QCamera2HardwareInterface::postview_stream_cb_routine(mm_camera_super_buf_t
     }
 
     free(super_frame);
-    CDBG_HIGH("[KPI Perf] %s : END", __func__);
+    LOGH("[KPI Perf] %s : END", __func__);
     return;
 }
 
@@ -1068,7 +1068,7 @@ void QCamera2HardwareInterface::video_stream_cb_routine(mm_camera_super_buf_t *s
                                                         void *userdata)
 {
     ATRACE_CALL();
-    CDBG_HIGH("[KPI Perf] %s : BEGIN", __func__);
+    LOGH("[KPI Perf] %s : BEGIN", __func__);
     QCamera2HardwareInterface *pme = (QCamera2HardwareInterface *)userdata;
     if (pme == NULL ||
         pme->mCameraHandle == NULL ||
@@ -1088,7 +1088,7 @@ void QCamera2HardwareInterface::video_stream_cb_routine(mm_camera_super_buf_t *s
        ALOGI("[KPI Perf] %s : PROFILE_FIRST_RECORD_FRAME", __func__);
        pme->m_bRecordStarted = false ;
     }
-    CDBG_HIGH("%s: Stream(%d), Timestamp: %ld %ld",
+    LOGH("%s: Stream(%d), Timestamp: %ld %ld",
           __func__,
           frame->stream_id,
           frame->ts.tv_sec,
@@ -1097,7 +1097,7 @@ void QCamera2HardwareInterface::video_stream_cb_routine(mm_camera_super_buf_t *s
     if (frame->buf_type == CAM_STREAM_BUF_TYPE_MPLANE) {
         nsecs_t timeStamp;
         timeStamp = nsecs_t(frame->ts.tv_sec) * 1000000000LL + frame->ts.tv_nsec;
-        CDBG_HIGH("Send Video frame to services/encoder TimeStamp : %lld",
+        LOGH("Send Video frame to services/encoder TimeStamp : %lld",
             timeStamp);
         QCameraMemory *videoMemObj = (QCameraMemory *)frame->mem_info;
         camera_memory_t *video_mem = NULL;
@@ -1147,7 +1147,7 @@ void QCamera2HardwareInterface::video_stream_cb_routine(mm_camera_super_buf_t *s
             nsecs_t timeStamp;
             timeStamp = nsecs_t(frame->ts.tv_sec) * 1000000000LL
                     + frame->ts.tv_nsec;
-            CDBG("Batch buffer TimeStamp : %lld FD = %d index = %d fd_cnt = %d",
+            LOGD("Batch buffer TimeStamp : %lld FD = %d index = %d fd_cnt = %d",
                     timeStamp, frame->fd, frame->buf_idx, fd_cnt);
 
             for (int i = 0; i < fd_cnt; i++) {
@@ -1162,7 +1162,7 @@ void QCamera2HardwareInterface::video_stream_cb_routine(mm_camera_super_buf_t *s
                     nh->data[fd_cnt + i] = 0;
                     nh->data[(2 * fd_cnt) + i] = (int)frameobj->getSize(plane_frame->buf_idx);
                     nh->data[(3 * fd_cnt) + i] = (int)(frame_ts - timeStamp);
-                    CDBG("Send Video frames to services/encoder delta : %lld FD = %d index = %d",
+                    LOGD("Send Video frames to services/encoder delta : %lld FD = %d index = %d",
                             (frame_ts - timeStamp), plane_frame->fd, plane_frame->buf_idx);
                     pme->dumpFrameToFile(stream, plane_frame, QCAMERA_DUMP_FRM_VIDEO);
                 }
@@ -1188,7 +1188,7 @@ void QCamera2HardwareInterface::video_stream_cb_routine(mm_camera_super_buf_t *s
         }
     }
     free(super_frame);
-    CDBG_HIGH("[KPI Perf] %s : END", __func__);
+    LOGH("[KPI Perf] %s : END", __func__);
 }
 
 /*===========================================================================
@@ -1212,7 +1212,7 @@ void QCamera2HardwareInterface::snapshot_channel_cb_routine(mm_camera_super_buf_
     ATRACE_CALL();
     char value[PROPERTY_VALUE_MAX];
 
-    CDBG_HIGH("[KPI Perf] %s: E", __func__);
+    LOGH("[KPI Perf] %s: E", __func__);
     QCamera2HardwareInterface *pme = (QCamera2HardwareInterface *)userdata;
     if (pme == NULL ||
         pme->mCameraHandle == NULL ||
@@ -1266,7 +1266,7 @@ void QCamera2HardwareInterface::snapshot_channel_cb_routine(mm_camera_super_buf_
 
     pme->m_postprocessor.processData(frame);
 
-    CDBG_HIGH("[KPI Perf] %s: X", __func__);
+    LOGH("[KPI Perf] %s: X", __func__);
 }
 
 /*===========================================================================
@@ -1293,7 +1293,7 @@ void QCamera2HardwareInterface::raw_stream_cb_routine(mm_camera_super_buf_t * su
                                                       void * userdata)
 {
     ATRACE_CALL();
-    CDBG_HIGH("[KPI Perf] %s : BEGIN", __func__);
+    LOGH("[KPI Perf] %s : BEGIN", __func__);
     QCamera2HardwareInterface *pme = (QCamera2HardwareInterface *)userdata;
     if (pme == NULL ||
         pme->mCameraHandle == NULL ||
@@ -1305,7 +1305,7 @@ void QCamera2HardwareInterface::raw_stream_cb_routine(mm_camera_super_buf_t * su
     }
 
     pme->m_postprocessor.processRawData(super_frame);
-    CDBG_HIGH("[KPI Perf] %s : END", __func__);
+    LOGH("[KPI Perf] %s : END", __func__);
 }
 
 /*===========================================================================
@@ -1328,7 +1328,7 @@ void QCamera2HardwareInterface::preview_raw_stream_cb_routine(mm_camera_super_bu
                                                               void * userdata)
 {
     ATRACE_CALL();
-    CDBG_HIGH("[KPI Perf] %s : BEGIN", __func__);
+    LOGH("[KPI Perf] %s : BEGIN", __func__);
     char value[PROPERTY_VALUE_MAX];
     bool dump_raw = false;
 
@@ -1360,7 +1360,7 @@ void QCamera2HardwareInterface::preview_raw_stream_cb_routine(mm_camera_super_bu
 
     free(super_frame);
 
-    CDBG_HIGH("[KPI Perf] %s : END", __func__);
+    LOGH("[KPI Perf] %s : END", __func__);
 }
 
 /*===========================================================================
@@ -1383,7 +1383,7 @@ void QCamera2HardwareInterface::snapshot_raw_stream_cb_routine(mm_camera_super_b
                                                                void * userdata)
 {
     ATRACE_CALL();
-    CDBG_HIGH("[KPI Perf] %s : BEGIN", __func__);
+    LOGH("[KPI Perf] %s : BEGIN", __func__);
     char value[PROPERTY_VALUE_MAX];
     bool dump_raw = false;
 
@@ -1415,7 +1415,7 @@ void QCamera2HardwareInterface::snapshot_raw_stream_cb_routine(mm_camera_super_b
 
     free(super_frame);
 
-    CDBG_HIGH("[KPI Perf] %s : END", __func__);
+    LOGH("[KPI Perf] %s : END", __func__);
 }
 
 /*===========================================================================
@@ -1516,7 +1516,7 @@ void QCamera2HardwareInterface::metadata_stream_cb_routine(mm_camera_super_buf_t
                                                            void * userdata)
 {
     ATRACE_CALL();
-    CDBG("[KPI Perf] %s : BEGIN", __func__);
+    LOGD("[KPI Perf] %s : BEGIN", __func__);
     QCamera2HardwareInterface *pme = (QCamera2HardwareInterface *)userdata;
     if (pme == NULL ||
         pme->mCameraHandle == NULL ||
@@ -1569,7 +1569,7 @@ void QCamera2HardwareInterface::metadata_stream_cb_routine(mm_camera_super_buf_t
         } else {
             // process face detection result
             if (faces_data->num_faces_detected)
-                CDBG_HIGH("[KPI Perf] %s: PROFILE_NUMBER_OF_FACES_DETECTED %d",
+                LOGH("[KPI Perf] %s: PROFILE_NUMBER_OF_FACES_DETECTED %d",
                     __func__,faces_data->num_faces_detected);
             faces_data->fd_type = QCAMERA_FD_PREVIEW; //HARD CODE here before MCT can support
             qcamera_sm_internal_evt_payload_t *payload = (qcamera_sm_internal_evt_payload_t *)
@@ -1659,7 +1659,7 @@ void QCamera2HardwareInterface::metadata_stream_cb_routine(mm_camera_super_buf_t
 
     IF_META_AVAILABLE(cam_asd_hdr_scene_data_t, hdr_scene_data,
             CAM_INTF_META_ASD_HDR_SCENE_DATA, pMetaData) {
-        CDBG_HIGH("%s: hdr_scene_data: %d %f\n", __func__,
+        LOGH("%s: hdr_scene_data: %d %f\n", __func__,
                 hdr_scene_data->is_hdr_scene, hdr_scene_data->hdr_confidence);
         //Handle this HDR meta data only if capture is not in process
         if (!pme->m_stateMachine.isCaptureRunning()) {
@@ -1702,7 +1702,7 @@ void QCamera2HardwareInterface::metadata_stream_cb_routine(mm_camera_super_buf_t
     }
 
     IF_META_AVAILABLE(cam_awb_params_t, awb_params, CAM_INTF_META_AWB_INFO, pMetaData) {
-        CDBG_HIGH("%s, metadata for awb params.", __func__);
+        LOGH("%s, metadata for awb params.", __func__);
         qcamera_sm_internal_evt_payload_t *payload =
                 (qcamera_sm_internal_evt_payload_t *)
                 malloc(sizeof(qcamera_sm_internal_evt_payload_t));
@@ -1845,7 +1845,7 @@ void QCamera2HardwareInterface::metadata_stream_cb_routine(mm_camera_super_buf_t
     stream->bufDone(frame->buf_idx);
     free(super_frame);
 
-    CDBG("[KPI Perf] %s : END", __func__);
+    LOGD("[KPI Perf] %s : END", __func__);
 }
 
 /*===========================================================================
@@ -1872,7 +1872,7 @@ void QCamera2HardwareInterface::reprocess_stream_cb_routine(mm_camera_super_buf_
                                                             void * userdata)
 {
     ATRACE_CALL();
-    CDBG_HIGH("[KPI Perf] %s: E", __func__);
+    LOGH("[KPI Perf] %s: E", __func__);
     QCamera2HardwareInterface *pme = (QCamera2HardwareInterface *)userdata;
     if (pme == NULL ||
         pme->mCameraHandle == NULL ||
@@ -1885,7 +1885,7 @@ void QCamera2HardwareInterface::reprocess_stream_cb_routine(mm_camera_super_buf_
 
     pme->m_postprocessor.processPPData(super_frame);
 
-    CDBG_HIGH("[KPI Perf] %s: X", __func__);
+    LOGH("[KPI Perf] %s: X", __func__);
 }
 
 /*===========================================================================
@@ -1946,7 +1946,7 @@ void QCamera2HardwareInterface::dumpJpegToFile(const void *data,
                     ssize_t written_len = write(file_fd, data, size);
                     fchmod(file_fd, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
                     int templog = static_cast<int>(written_len);
-                    CDBG_HIGH("%s: written number of bytes %d\n",
+                    LOGH("%s: written number of bytes %d\n",
                             __func__, templog);
                     close(file_fd);
                 } else {
@@ -1971,7 +1971,7 @@ void QCamera2HardwareInterface::dumpMetadataToFile(QCameraStream *stream,
     property_get("persist.camera.dumpmetadata", value, "0");
     uint32_t enabled = (uint32_t) atoi(value);
     if (stream == NULL) {
-        CDBG_HIGH("No op");
+        LOGH("No op");
         return;
     }
 
@@ -1988,7 +1988,7 @@ void QCamera2HardwareInterface::dumpMetadataToFile(QCameraStream *stream,
             // reset frame count if cycling
             dumpFrmCnt = 0;
         }
-        CDBG_HIGH("dumpFrmCnt= %u, frm_num = %u", dumpFrmCnt, frm_num);
+        LOGH("dumpFrmCnt= %u, frm_num = %u", dumpFrmCnt, frm_num);
         if (dumpFrmCnt < frm_num) {
             char timeBuf[128];
             char buf[32];
@@ -2012,19 +2012,19 @@ void QCamera2HardwareInterface::dumpMetadataToFile(QCameraStream *stream,
                 void *data = (void *)((uint8_t *)&metadata->tuning_params.tuning_data_version);
                 written_len += write(file_fd, data, sizeof(uint32_t));
                 data = (void *)((uint8_t *)&metadata->tuning_params.tuning_sensor_data_size);
-                CDBG_HIGH("tuning_sensor_data_size %d",(int)(*(int *)data));
+                LOGH("tuning_sensor_data_size %d",(int)(*(int *)data));
                 written_len += write(file_fd, data, sizeof(uint32_t));
                 data = (void *)((uint8_t *)&metadata->tuning_params.tuning_vfe_data_size);
-                CDBG_HIGH("tuning_vfe_data_size %d",(int)(*(int *)data));
+                LOGH("tuning_vfe_data_size %d",(int)(*(int *)data));
                 written_len += write(file_fd, data, sizeof(uint32_t));
                 data = (void *)((uint8_t *)&metadata->tuning_params.tuning_cpp_data_size);
-                CDBG_HIGH("tuning_cpp_data_size %d",(int)(*(int *)data));
+                LOGH("tuning_cpp_data_size %d",(int)(*(int *)data));
                 written_len += write(file_fd, data, sizeof(uint32_t));
                 data = (void *)((uint8_t *)&metadata->tuning_params.tuning_cac_data_size);
-                CDBG_HIGH("tuning_cac_data_size %d",(int)(*(int *)data));
+                LOGH("tuning_cac_data_size %d",(int)(*(int *)data));
                 written_len += write(file_fd, data, sizeof(uint32_t));
                 data = (void *)((uint8_t *)&metadata->tuning_params.tuning_cac_data_size2);
-                CDBG_HIGH("%s < skrajago >tuning_cac_data_size %d",__func__,(int)(*(int *)data));
+                LOGH("%s < skrajago >tuning_cac_data_size %d",__func__,(int)(*(int *)data));
                 written_len += write(file_fd, data, sizeof(uint32_t));
                 size_t total_size = metadata->tuning_params.tuning_sensor_data_size;
                 data = (void *)((uint8_t *)&metadata->tuning_params.data);
@@ -2194,7 +2194,7 @@ void QCamera2HardwareInterface::dumpFrameToFile(QCameraStream *stream,
                             }
                         }
                         int templog = static_cast<int>(written_len);
-                        CDBG_HIGH("%s: written number of bytes %d\n",
+                        LOGH("%s: written number of bytes %d\n",
                             __func__, templog);
                         close(file_fd);
                     } else {
@@ -2233,7 +2233,7 @@ void QCamera2HardwareInterface::debugShowVideoFPS()
     if (diff > ms2ns(250)) {
         mVFps = (((double)(mVFrameCount - mVLastFrameCount)) *
                 (double)(s2ns(1))) / (double)diff;
-        CDBG_HIGH("Video Frames Per Second: %.4f Cam ID = %d", mVFps, mCameraId);
+        LOGH("Video Frames Per Second: %.4f Cam ID = %d", mVFps, mCameraId);
         mVLastFpsTime = now;
         mVLastFrameCount = mVFrameCount;
     }
@@ -2256,7 +2256,7 @@ void QCamera2HardwareInterface::debugShowPreviewFPS()
     if (diff > ms2ns(250)) {
         mPFps = (((double)(mPFrameCount - mPLastFrameCount)) *
                 (double)(s2ns(1))) / (double)diff;
-        CDBG_HIGH("[KPI Perf] %s: PROFILE_PREVIEW_FRAMES_PER_SECOND : %.4f Cam ID = %d",
+        LOGH("[KPI Perf] %s: PROFILE_PREVIEW_FRAMES_PER_SECOND : %.4f Cam ID = %d",
                 __func__, mPFps, mCameraId);
         mPLastFpsTime = now;
         mPLastFrameCount = mPFrameCount;
@@ -2390,19 +2390,19 @@ void * QCameraCbNotifier::cbNotifyRoutine(void * data)
     uint32_t numOfSnapshotRcvd = 0;
     int32_t cbStatus = NO_ERROR;
 
-    CDBG("%s: E", __func__);
+    LOGD("%s: E", __func__);
     do {
         do {
             ret = cam_sem_wait(&cmdThread->cmd_sem);
             if (ret != 0 && errno != EINVAL) {
-                CDBG("%s: cam_sem_wait error (%s)",
+                LOGD("%s: cam_sem_wait error (%s)",
                            __func__, strerror(errno));
                 return NULL;
             }
         } while (ret != 0);
 
         camera_cmd_type_t cmd = cmdThread->getCmd();
-        CDBG("%s: get cmd %d", __func__, cmd);
+        LOGD("%s: get cmd %d", __func__, cmd);
         switch (cmd) {
         case CAMERA_CMD_TYPE_START_DATA_PROC:
             {
@@ -2429,7 +2429,7 @@ void * QCameraCbNotifier::cbNotifyRoutine(void * data)
                     (qcamera_callback_argm_t *)pme->mDataQ.dequeue();
                 cbStatus = NO_ERROR;
                 if (NULL != cb) {
-                    CDBG("%s: cb type %d received",
+                    LOGD("%s: cb type %d received",
                           __func__,
                           cb->cb_type);
 
@@ -2439,7 +2439,7 @@ void * QCameraCbNotifier::cbNotifyRoutine(void * data)
                             {
                                 if (cb->msg_type == CAMERA_MSG_FOCUS) {
                                     ATRACE_INT("Camera:AutoFocus", 0);
-                                    CDBG_HIGH("[KPI Perf] %s : PROFILE_SENDING_FOCUS_EVT_TO APP",
+                                    LOGH("[KPI Perf] %s : PROFILE_SENDING_FOCUS_EVT_TO APP",
                                         __func__);
                                 }
                                 if (pme->mNotifyCb) {
@@ -2539,7 +2539,7 @@ void * QCameraCbNotifier::cbNotifyRoutine(void * data)
             break;
         }
     } while (running);
-    CDBG("%s: X", __func__);
+    LOGD("%s: X", __func__);
 
     return NULL;
 }

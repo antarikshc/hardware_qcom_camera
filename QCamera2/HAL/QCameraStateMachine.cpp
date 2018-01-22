@@ -51,7 +51,7 @@ void *QCameraStateMachine::smEvtProcRoutine(void *data)
     int running = 1, ret;
     QCameraStateMachine *pme = (QCameraStateMachine *)data;
 
-    CDBG_HIGH("%s: E", __func__);
+    LOGH("%s: E", __func__);
     do {
         do {
             ret = cam_sem_wait(&pme->cmd_sem);
@@ -93,7 +93,7 @@ void *QCameraStateMachine::smEvtProcRoutine(void *data)
             node = NULL;
         }
     } while (running);
-    CDBG_HIGH("%s: X", __func__);
+    LOGH("%s: X", __func__);
     return NULL;
 }
 
@@ -165,7 +165,7 @@ void QCameraStateMachine::releaseThread()
 
             /* wait until cmd thread exits */
             if (pthread_join(cmd_pid, NULL) != 0) {
-                CDBG_HIGH("%s: pthread dead already\n", __func__);
+                LOGH("%s: pthread dead already\n", __func__);
             }
         }
         cmd_pid = 0;
@@ -481,7 +481,7 @@ int32_t QCameraStateMachine::procEvtPreviewStoppedState(qcamera_sm_evt_enum_t ev
     case QCAMERA_SM_EVT_STOP_PREVIEW:
         {
             // no op needed here
-            CDBG_HIGH("%s: already in preview stopped state, do nothing", __func__);
+            LOGH("%s: already in preview stopped state, do nothing", __func__);
             result.status = NO_ERROR;
             result.request_api = evt;
             result.result_type = QCAMERA_API_RESULT_TYPE_DEF;
@@ -556,7 +556,7 @@ int32_t QCameraStateMachine::procEvtPreviewStoppedState(qcamera_sm_evt_enum_t ev
     case QCAMERA_SM_EVT_CANCEL_PICTURE:
         {
             // no op needed here
-            CDBG_HIGH("%s: No ops for evt(%d) in state(%d)", __func__, evt, m_state);
+            LOGH("%s: No ops for evt(%d) in state(%d)", __func__, evt, m_state);
             result.status = NO_ERROR;
             result.request_api = evt;
             result.result_type = QCAMERA_API_RESULT_TYPE_DEF;
@@ -1118,7 +1118,7 @@ int32_t QCameraStateMachine::procEvtPreviewingState(qcamera_sm_evt_enum_t evt,
     case QCAMERA_SM_EVT_START_NODISPLAY_PREVIEW:
         {
             // no ops here
-            CDBG_HIGH("%s: Already in previewing, no ops here to start preview", __func__);
+            LOGH("%s: Already in previewing, no ops here to start preview", __func__);
             applyDelayedMsgs();
             rc = NO_ERROR;
             result.status = rc;
@@ -1405,7 +1405,7 @@ int32_t QCameraStateMachine::procEvtPreviewingState(qcamera_sm_evt_enum_t evt,
                 }
                 break;
             default:
-                CDBG_HIGH("%s: no handling for server evt (%d) at this state",
+                LOGH("%s: no handling for server evt (%d) at this state",
                       __func__, cam_evt->server_event_type);
                 break;
             }
@@ -1501,7 +1501,7 @@ int32_t QCameraStateMachine::procEvtPrepareSnapshotState(qcamera_sm_evt_enum_t e
                 rc = m_parent->processAutoFocusEvent(internal_evt->focus_data);
                 break;
             case QCAMERA_INTERNAL_EVT_PREP_SNAPSHOT_DONE:
-                CDBG("%s: Received QCAMERA_INTERNAL_EVT_PREP_SNAPSHOT_DONE event",
+                LOGD("%s: Received QCAMERA_INTERNAL_EVT_PREP_SNAPSHOT_DONE event",
                     __func__);
                 m_parent->processPrepSnapshotDoneEvent(internal_evt->prep_snapshot_state);
                 m_state = QCAMERA_SM_STATE_PREVIEWING;
@@ -1931,7 +1931,7 @@ int32_t QCameraStateMachine::procEvtPicTakingState(qcamera_sm_evt_enum_t evt,
                 }
                 break;
             default:
-                CDBG_HIGH("%s: no handling for server evt (%d) at this state",
+                LOGH("%s: no handling for server evt (%d) at this state",
                       __func__, cam_evt->server_event_type);
                 break;
             }
@@ -2022,7 +2022,7 @@ int32_t QCameraStateMachine::procEvtRecordingState(qcamera_sm_evt_enum_t evt,
         {
             // WA: CTS test VideoSnapshot will try to
             //     start preview during video recording.
-            CDBG_HIGH("CTS video restart op");
+            LOGH("CTS video restart op");
             rc = NO_ERROR;
             result.status = rc;
             result.request_api = evt;
@@ -2197,7 +2197,7 @@ int32_t QCameraStateMachine::procEvtRecordingState(qcamera_sm_evt_enum_t evt,
     case QCAMERA_SM_EVT_START_RECORDING:
         {
             // no ops here
-            CDBG_HIGH("%s: already in recording state, no ops for start_recording", __func__);
+            LOGH("%s: already in recording state, no ops for start_recording", __func__);
             rc = 0;
             result.status = rc;
             result.request_api = evt;

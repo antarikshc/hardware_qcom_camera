@@ -183,7 +183,7 @@ int32_t QCameraPostProcessor::deinit()
 
         if(mJpegClientHandle > 0) {
             int rc = mJpegHandle.close(mJpegClientHandle);
-            CDBG_HIGH("%s: Jpeg closed, rc = %d, mJpegClientHandle = %x",
+            LOGH("%s: Jpeg closed, rc = %d, mJpegClientHandle = %x",
                   __func__, rc, mJpegClientHandle);
             mJpegClientHandle = 0;
             memset(&mJpegHandle, 0, sizeof(mJpegHandle));
@@ -248,7 +248,7 @@ int32_t QCameraPostProcessor::start(QCameraChannel *pSrcChannel)
         mTotalNumReproc = m_parent->mParameters.getReprocCount();
         m_parent->mParameters.setCurPPCount(0);
 
-        CDBG("%s : %d: mTotalNumReproc = %d", __func__, __LINE__, mTotalNumReproc);
+        LOGD("%s : %d: mTotalNumReproc = %d", __func__, __LINE__, mTotalNumReproc);
 
         // Create all reproc channels and start channel
         for (int8_t i = 0; i < mTotalNumReproc; i++) {
@@ -340,7 +340,7 @@ int32_t QCameraPostProcessor::start(QCameraChannel *pSrcChannel)
                 ALOGE("%s: error getting encoding config", __func__);
                 return rc;
             }
-            CDBG_HIGH("[KPI Perf] %s : call jpeg create_session", __func__);
+            LOGH("[KPI Perf] %s : call jpeg create_session", __func__);
 
             rc = mJpegHandle.create_session(mJpegClientHandle,
                     &encodeParam,
@@ -417,7 +417,7 @@ int32_t QCameraPostProcessor::getJpegEncodingConfig(mm_jpeg_encode_params_t& enc
                                                     QCameraStream *main_stream,
                                                     QCameraStream *thumb_stream)
 {
-    CDBG("%s : E", __func__);
+    LOGD("%s : E", __func__);
     int32_t ret = NO_ERROR;
     size_t out_size;
 
@@ -602,13 +602,13 @@ int32_t QCameraPostProcessor::getJpegEncodingConfig(mm_jpeg_encode_params_t& enc
     }
 
 
-    CDBG("%s : X", __func__);
+    LOGD("%s : X", __func__);
     return NO_ERROR;
 
 on_error:
     FREE_JPEG_OUTPUT_BUFFER(m_pJpegOutputMem, m_JpegOutputMemCount);
 
-    CDBG("%s : X with error %d", __func__, ret);
+    LOGD("%s : X with error %d", __func__, ret);
     return ret;
 }
 
@@ -725,7 +725,7 @@ bool QCameraPostProcessor::validatePostProcess(mm_camera_super_buf_t *frame)
             pStream = m_pReprocChannel->getStreamByIndex(i);
             if (pStream && (m_inputPPQ.getCurrentSize() > 0) &&
                     m_ongoingPPQ.getCurrentSize() >=  pStream->getNumQueuedBuf()) {
-                CDBG_HIGH("Out of PP Buffer PPQ = %d ongoingQ = %d Jpeg = %d onJpeg = %d",
+                LOGH("Out of PP Buffer PPQ = %d ongoingQ = %d Jpeg = %d onJpeg = %d",
                         m_inputPPQ.getCurrentSize(), m_inputPPQ.getCurrentSize(),
                         m_inputJpegQ.getCurrentSize(), m_ongoingJpegQ.getCurrentSize());
                 status = FALSE;
@@ -784,7 +784,7 @@ int32_t QCameraPostProcessor::processData(mm_camera_super_buf_t *frame)
         }
 
         ATRACE_INT("Camera:Reprocess", 1);
-        CDBG_HIGH("%s: need reprocess", __func__);
+        LOGH("%s: need reprocess", __func__);
 
         // enqueu to post proc input queue
         qcamera_pp_request_t *pp_request_job =
@@ -801,7 +801,7 @@ int32_t QCameraPostProcessor::processData(mm_camera_super_buf_t *frame)
             //avoid sending frame for reprocessing if o/p buffer is not queued to CPP.
             triggerEvent = validatePostProcess(frame);
         }else {
-            CDBG_HIGH("%s : Input PP Q is not active!!!", __func__);
+            LOGH("%s : Input PP Q is not active!!!", __func__);
             releaseSuperBuf(frame);
             free(frame);
             free(pp_request_job);
@@ -826,7 +826,7 @@ int32_t QCameraPostProcessor::processData(mm_camera_super_buf_t *frame)
            !m_parent->mLongshotEnabled)
            m_parent->playShutter();
 
-        CDBG_HIGH("%s: no need offline reprocess, sending to jpeg encoding", __func__);
+        LOGH("%s: no need offline reprocess, sending to jpeg encoding", __func__);
         qcamera_jpeg_data_t *jpeg_job =
             (qcamera_jpeg_data_t *)malloc(sizeof(qcamera_jpeg_data_t));
         if (jpeg_job == NULL) {
@@ -844,7 +844,7 @@ int32_t QCameraPostProcessor::processData(mm_camera_super_buf_t *frame)
 
         // enqueu to jpeg input queue
         if (!m_inputJpegQ.enqueue((void *)jpeg_job)) {
-            CDBG_HIGH("%s : Input Jpeg Q is not active!!!", __func__);
+            LOGH("%s : Input Jpeg Q is not active!!!", __func__);
             releaseJpegJobData(jpeg_job);
             free(jpeg_job);
             jpeg_job = NULL;
@@ -882,7 +882,7 @@ int32_t QCameraPostProcessor::processRawData(mm_camera_super_buf_t *frame)
     if (m_inputRawQ.enqueue((void *)frame)) {
         m_dataProcTh.sendCmd(CAMERA_CMD_TYPE_DO_NEXT_JOB, FALSE, FALSE);
     } else {
-        CDBG_HIGH("%s : m_inputRawQ is not active!!!", __func__);
+        LOGH("%s : m_inputRawQ is not active!!!", __func__);
         releaseSuperBuf(frame);
         free(frame);
         frame = NULL;
@@ -928,7 +928,7 @@ int32_t QCameraPostProcessor::processJpegEvt(qcamera_jpeg_evt_payload_t *evt)
         if (m_inputSaveQ.enqueue((void *) saveData)) {
             m_saveProcTh.sendCmd(CAMERA_CMD_TYPE_DO_NEXT_JOB, FALSE, FALSE);
         } else {
-            CDBG("%s : m_inputSaveQ PP Q is not active!!!", __func__);
+            LOGD("%s : m_inputSaveQ PP Q is not active!!!", __func__);
             free(saveData);
             saveData = NULL;
             return rc;
@@ -940,12 +940,12 @@ int32_t QCameraPostProcessor::processJpegEvt(qcamera_jpeg_evt_payload_t *evt)
         if (m_inputPPQ.getCurrentSize() > 0) {
             m_dataProcTh.sendCmd(CAMERA_CMD_TYPE_DO_NEXT_JOB, FALSE, FALSE);
         }
-        CDBG_HIGH("[KPI Perf] %s : jpeg job %d", __func__, evt->jobId);
+        LOGH("[KPI Perf] %s : jpeg job %d", __func__, evt->jobId);
 
         if ((false == m_parent->m_bIntJpegEvtPending) &&
              (m_parent->mDataCb == NULL ||
               m_parent->msgTypeEnabledWithLock(CAMERA_MSG_COMPRESSED_IMAGE) == 0 )) {
-            CDBG_HIGH("%s: No dataCB or CAMERA_MSG_COMPRESSED_IMAGE not enabled",
+            LOGH("%s: No dataCB or CAMERA_MSG_COMPRESSED_IMAGE not enabled",
                   __func__);
             rc = NO_ERROR;
             goto end;
@@ -961,7 +961,7 @@ int32_t QCameraPostProcessor::processJpegEvt(qcamera_jpeg_evt_payload_t *evt)
         m_parent->dumpJpegToFile(evt->out_data.buf_vaddr,
                                   evt->out_data.buf_filled_len,
                                   evt->jobId);
-        CDBG_HIGH("%s: Dump jpeg_size=%d", __func__, evt->out_data.buf_filled_len);
+        LOGH("%s: Dump jpeg_size=%d", __func__, evt->out_data.buf_filled_len);
 
         if(true == m_parent->m_bIntJpegEvtPending) {
             //Sending JPEG snapshot taken notification to HAL
@@ -987,11 +987,11 @@ int32_t QCameraPostProcessor::processJpegEvt(qcamera_jpeg_evt_payload_t *evt)
             jpeg_mem = (camera_memory_t *)jpeg_out->mem_hdl;
         }
 
-        CDBG_HIGH("%s : Calling upperlayer callback to store JPEG image", __func__);
+        LOGH("%s : Calling upperlayer callback to store JPEG image", __func__);
         qcamera_release_data_t release_data;
         memset(&release_data, 0, sizeof(qcamera_release_data_t));
         release_data.data = jpeg_mem;
-        CDBG_HIGH("[KPI Perf] %s: PROFILE_JPEG_CB ",__func__);
+        LOGH("[KPI Perf] %s: PROFILE_JPEG_CB ",__func__);
         rc = sendDataNotify(CAMERA_MSG_COMPRESSED_IMAGE,
                             jpeg_mem,
                             0,
@@ -1021,7 +1021,7 @@ end:
             jpeg_mem = m_DataMem;
             release_data.data = jpeg_mem;
             m_DataMem = NULL;
-            CDBG_HIGH("[KPI Perf] %s: send jpeg callback for depthmap ",__func__);
+            LOGH("[KPI Perf] %s: send jpeg callback for depthmap ",__func__);
             rc = sendDataNotify(CAMERA_MSG_COMPRESSED_IMAGE,
                 jpeg_mem,
                 0,
@@ -1108,7 +1108,7 @@ int32_t QCameraPostProcessor::processPPData(mm_camera_super_buf_t *frame)
         job->src_frame = NULL;
     }
 
-    CDBG("%s: mCurReprocCount = %d mTotalNumReproc = %d",
+    LOGD("%s: mCurReprocCount = %d mTotalNumReproc = %d",
             __func__, mCurReprocCount, mTotalNumReproc);
     if (mCurReprocCount < mTotalNumReproc) {
         //More pp pass needed. Push frame back to pp queue.
@@ -1126,7 +1126,7 @@ int32_t QCameraPostProcessor::processPPData(mm_camera_super_buf_t *frame)
         if (m_inputPPQ.enqueue((void *)pp_request_job)) {
             triggerEvent = validatePostProcess(frame);
         } else {
-            CDBG_HIGH("%s : m_input PP Q is not active!!!", __func__);
+            LOGH("%s : m_input PP Q is not active!!!", __func__);
             releasePPInputData(pp_request_job,this);
             free(pp_request_job);
             pp_request_job = NULL;
@@ -1189,7 +1189,7 @@ int32_t QCameraPostProcessor::processPPData(mm_camera_super_buf_t *frame)
                 triggerEvent = validatePostProcess(frame);
             }
         } else {
-            CDBG_HIGH("%s : Input Jpeg Q is not active!!!", __func__);
+            LOGH("%s : Input Jpeg Q is not active!!!", __func__);
             releaseJpegJobData(jpeg_job);
             free(jpeg_job);
             jpeg_job = NULL;
@@ -1287,7 +1287,7 @@ void QCameraPostProcessor::releaseJpegData(void *data, void *user_data)
     QCameraPostProcessor *pme = (QCameraPostProcessor *)user_data;
     if (NULL != pme) {
         pme->releaseJpegJobData((qcamera_jpeg_data_t *)data);
-        CDBG_HIGH("%s : Rleased job ID %u", __func__,
+        LOGH("%s : Rleased job ID %u", __func__,
             ((qcamera_jpeg_data_t *)data)->jobId);
     }
 }
@@ -1356,7 +1356,7 @@ void QCameraPostProcessor::releaseNotifyData(void *user_data,
             String8 unlinkPath((const char *) app_cb->release_data.data->data,
                                 app_cb->release_data.data->size);
             int rc = unlink(unlinkPath.string());
-            CDBG_HIGH("%s : Unlinking stored file rc = %d",
+            LOGH("%s : Unlinking stored file rc = %d",
                   __func__,
                   rc);
         }
@@ -1432,7 +1432,7 @@ void QCameraPostProcessor::releaseSuperBuf(mm_camera_super_buf_t *super_buf)
  *==========================================================================*/
 void QCameraPostProcessor::releaseJpegJobData(qcamera_jpeg_data_t *job)
 {
-    CDBG("%s: E", __func__);
+    LOGD("%s: E", __func__);
     if (NULL != job) {
         if (NULL != job->src_reproc_frame) {
             if (!job->reproc_frame_release) {
@@ -1458,7 +1458,7 @@ void QCameraPostProcessor::releaseJpegJobData(qcamera_jpeg_data_t *job)
         }
 
     }
-    CDBG("%s: X", __func__);
+    LOGD("%s: X", __func__);
 }
 
 /*===========================================================================
@@ -1474,7 +1474,7 @@ void QCameraPostProcessor::releaseJpegJobData(qcamera_jpeg_data_t *job)
  *==========================================================================*/
 void QCameraPostProcessor::releaseSaveJobData(void *data, void *user_data)
 {
-    CDBG("%s: E", __func__);
+    LOGD("%s: E", __func__);
 
     QCameraPostProcessor *pme = (QCameraPostProcessor *) user_data;
     if (NULL == pme) {
@@ -1498,7 +1498,7 @@ void QCameraPostProcessor::releaseSaveJobData(void *data, void *user_data)
         ALOGE("%s : Invalid jpeg job", __func__);
     }
 
-    CDBG("%s: X", __func__);
+    LOGD("%s: X", __func__);
 }
 
 /*===========================================================================
@@ -1514,7 +1514,7 @@ void QCameraPostProcessor::releaseSaveJobData(void *data, void *user_data)
  *==========================================================================*/
 void QCameraPostProcessor::releaseRawData(void *data, void *user_data)
 {
-    CDBG("%s: E", __func__);
+    LOGD("%s: E", __func__);
 
     QCameraPostProcessor *pme = (QCameraPostProcessor *) user_data;
     if (NULL == pme) {
@@ -1524,7 +1524,7 @@ void QCameraPostProcessor::releaseRawData(void *data, void *user_data)
     mm_camera_super_buf_t *super_buf = (mm_camera_super_buf_t *) data;
     pme->releaseSuperBuf(super_buf);
 
-    CDBG("%s: X", __func__);
+    LOGD("%s: X", __func__);
 }
 
 
@@ -1777,7 +1777,7 @@ int32_t QCameraPostProcessor::syncStreamParams(mm_camera_super_buf_t *frame,
 int32_t QCameraPostProcessor::encodeData(qcamera_jpeg_data_t *jpeg_job_data,
                                          uint8_t &needNewSess)
 {
-    CDBG("%s : E", __func__);
+    LOGD("%s : E", __func__);
     int32_t ret = NO_ERROR;
     mm_jpeg_job_t jpg_job;
     uint32_t jobId = 0;
@@ -1829,7 +1829,7 @@ int32_t QCameraPostProcessor::encodeData(qcamera_jpeg_data_t *jpeg_job_data,
     }
 
     if(NULL == thumb_frame){
-       CDBG("%s : Thumbnail frame does not exist", __func__);
+       LOGD("%s : Thumbnail frame does not exist", __func__);
     }
 
     QCameraMemory *memObj = (QCameraMemory *)main_frame->mem_info;
@@ -1878,7 +1878,7 @@ int32_t QCameraPostProcessor::encodeData(qcamera_jpeg_data_t *jpeg_job_data,
             ALOGE("%s: error getting encoding config", __func__);
             return ret;
         }
-        CDBG_HIGH("[KPI Perf] %s : call jpeg create_session", __func__);
+        LOGH("[KPI Perf] %s : call jpeg create_session", __func__);
         ret = mJpegHandle.create_session(mJpegClientHandle, &encodeParam, &mJpegSessionId);
         if (ret != NO_ERROR) {
             ALOGE("%s: error creating a new jpeg encoding session", __func__);
@@ -1911,7 +1911,7 @@ int32_t QCameraPostProcessor::encodeData(qcamera_jpeg_data_t *jpeg_job_data,
             m_parent->mParameters.isOptiZoomEnabled() ||
             m_parent->mParameters.isStillMoreEnabled();
 
-    CDBG_HIGH("%s:%d] Crop needed %d", __func__, __LINE__, img_feature_enabled);
+    LOGH("%s:%d] Crop needed %d", __func__, __LINE__, img_feature_enabled);
     crop.left = 0;
     crop.top = 0;
     crop.height = src_dim.height;
@@ -1945,7 +1945,7 @@ int32_t QCameraPostProcessor::encodeData(qcamera_jpeg_data_t *jpeg_job_data,
             camera_memory_t *dataMem = m_parent->mGetMemory(-1, resultSize,
                     1, m_parent->mCallbackCookie);
 
-            CDBG_HIGH("%s:%d] Refocus result header %u dims %dx%d", __func__, __LINE__,
+            LOGH("%s:%d] Refocus result header %u dims %dx%d", __func__, __LINE__,
                     resultSize, refocusResult->width, refocusResult->height);
 
             if (dataMem && dataMem->data) {
@@ -1961,7 +1961,7 @@ int32_t QCameraPostProcessor::encodeData(qcamera_jpeg_data_t *jpeg_job_data,
                 reinterpret_cast<cam_misc_buf_t *>(miscBufHandler->getPtr(0));
         uint32_t tpMetaSize = tpResult->header_size + tpResult->width * tpResult->height;
 
-        CDBG_HIGH("%s:%d] True portrait result header %d% dims dx%d", __func__, __LINE__,
+        LOGH("%s:%d] True portrait result header %d% dims dx%d", __func__, __LINE__,
                 tpMetaSize, tpResult->width, tpResult->height);
 
         CAM_DUMP_TO_FILE(QCAMERA_DUMP_FRM_LOCATION"tp", "bm", -1, "y",
@@ -2011,7 +2011,7 @@ int32_t QCameraPostProcessor::encodeData(qcamera_jpeg_data_t *jpeg_job_data,
     if (!m_parent->needRotationReprocess()) {
         jpg_job.encode_job.rotation = jpeg_rotation;
     }
-    CDBG_HIGH("%s: jpeg rotation is set to %d", __func__, jpg_job.encode_job.rotation);
+    LOGH("%s: jpeg rotation is set to %d", __func__, jpg_job.encode_job.rotation);
 
     // thumbnail dim
     if (m_bThumbnailNeeded == TRUE) {
@@ -2057,7 +2057,7 @@ int32_t QCameraPostProcessor::encodeData(qcamera_jpeg_data_t *jpeg_job_data,
         if (thumb_frame != NULL) {
             jpg_job.encode_job.thumb_index = thumb_frame->buf_idx;
         }
-        CDBG_HIGH("%s, thumbnail src w/h (%dx%d), dst w/h (%dx%d)", __func__,
+        LOGH("%s, thumbnail src w/h (%dx%d), dst w/h (%dx%d)", __func__,
             jpg_job.encode_job.thumb_dim.src_dim.width,
             jpg_job.encode_job.thumb_dim.src_dim.height,
             jpg_job.encode_job.thumb_dim.dst_dim.width,
@@ -2130,7 +2130,7 @@ int32_t QCameraPostProcessor::encodeData(qcamera_jpeg_data_t *jpeg_job_data,
         jpg_job.encode_job.qtable_set[i] = 0;
     }
 
-    CDBG_HIGH("[KPI Perf] %s : PROFILE_JPEG_JOB_START", __func__);
+    LOGH("[KPI Perf] %s : PROFILE_JPEG_JOB_START", __func__);
     ret = mJpegHandle.start_job(&jpg_job, &jobId);
     if (ret == NO_ERROR) {
         // remember job info
@@ -2306,7 +2306,7 @@ void *QCameraPostProcessor::dataSaveRoutine(void *data)
     cmdThread->setName("CAM_JpegSave");
     char saveName[PROPERTY_VALUE_MAX];
 
-    CDBG_HIGH("%s: E", __func__);
+    LOGH("%s: E", __func__);
     do {
         do {
             ret = cam_sem_wait(&cmdThread->cmd_sem);
@@ -2321,13 +2321,13 @@ void *QCameraPostProcessor::dataSaveRoutine(void *data)
         camera_cmd_type_t cmd = cmdThread->getCmd();
         switch (cmd) {
         case CAMERA_CMD_TYPE_START_DATA_PROC:
-            CDBG_HIGH("%s: start data proc", __func__);
+            LOGH("%s: start data proc", __func__);
             is_active = TRUE;
             pme->m_inputSaveQ.init();
             break;
         case CAMERA_CMD_TYPE_STOP_DATA_PROC:
             {
-                CDBG_HIGH("%s: stop data proc", __func__);
+                LOGH("%s: stop data proc", __func__);
                 is_active = FALSE;
 
                 // flush input save Queue
@@ -2339,7 +2339,7 @@ void *QCameraPostProcessor::dataSaveRoutine(void *data)
             break;
         case CAMERA_CMD_TYPE_DO_NEXT_JOB:
             {
-                CDBG_HIGH("%s: Do next job, active is %d", __func__, is_active);
+                LOGH("%s: Do next job, active is %d", __func__, is_active);
 
                 qcamera_jpeg_evt_payload_t *job_data = (qcamera_jpeg_evt_payload_t *) pme->m_inputSaveQ.dequeue();
                 if (job_data == NULL) {
@@ -2349,7 +2349,7 @@ void *QCameraPostProcessor::dataSaveRoutine(void *data)
 
                 pme->m_ongoingJpegQ.flushNodes(matchJobId, (void*)&job_data->jobId);
 
-                CDBG_HIGH("[KPI Perf] %s : jpeg job %d", __func__, job_data->jobId);
+                LOGH("[KPI Perf] %s : jpeg job %d", __func__, job_data->jobId);
 
                 if (is_active == TRUE) {
                     memset(saveName, '\0', sizeof(saveName));
@@ -2369,7 +2369,7 @@ void *QCameraPostProcessor::dataSaveRoutine(void *data)
                                   __func__, templog,
                                   job_data->out_data.buf_filled_len);
                         } else {
-                            CDBG_HIGH("%s: written number of bytes %d\n",
+                            LOGH("%s: written number of bytes %d\n",
                                 __func__, templog);
                         }
 
@@ -2390,12 +2390,12 @@ void *QCameraPostProcessor::dataSaveRoutine(void *data)
                     }
                     memcpy(jpeg_mem->data, saveName, strlen(saveName));
 
-                    CDBG_HIGH("%s : Calling upperlayer callback to store JPEG image", __func__);
+                    LOGH("%s : Calling upperlayer callback to store JPEG image", __func__);
                     qcamera_release_data_t release_data;
                     memset(&release_data, 0, sizeof(qcamera_release_data_t));
                     release_data.data = jpeg_mem;
                     release_data.unlinkFile = true;
-                    CDBG_HIGH("[KPI Perf] %s: PROFILE_JPEG_CB ",__func__);
+                    LOGH("[KPI Perf] %s: PROFILE_JPEG_CB ",__func__);
                     ret = pme->sendDataNotify(CAMERA_MSG_COMPRESSED_IMAGE,
                                         jpeg_mem,
                                         0,
@@ -2408,14 +2408,14 @@ end:
             }
             break;
         case CAMERA_CMD_TYPE_EXIT:
-            CDBG_HIGH("%s : save thread exit", __func__);
+            LOGH("%s : save thread exit", __func__);
             running = 0;
             break;
         default:
             break;
         }
     } while (running);
-    CDBG_HIGH("%s: X", __func__);
+    LOGH("%s: X", __func__);
     return NULL;
 }
 
@@ -2440,7 +2440,7 @@ void *QCameraPostProcessor::dataProcessRoutine(void *data)
     QCameraCmdThread *cmdThread = &pme->m_dataProcTh;
     cmdThread->setName("CAM_JpegProc");
 
-    CDBG_HIGH("%s: E", __func__);
+    LOGH("%s: E", __func__);
     do {
         do {
             ret = cam_sem_wait(&cmdThread->cmd_sem);
@@ -2455,7 +2455,7 @@ void *QCameraPostProcessor::dataProcessRoutine(void *data)
         camera_cmd_type_t cmd = cmdThread->getCmd();
         switch (cmd) {
         case CAMERA_CMD_TYPE_START_DATA_PROC:
-            CDBG_HIGH("%s: start data proc", __func__);
+            LOGH("%s: start data proc", __func__);
             is_active = TRUE;
 
             pme->m_ongoingPPQ.init();
@@ -2473,7 +2473,7 @@ void *QCameraPostProcessor::dataProcessRoutine(void *data)
             break;
         case CAMERA_CMD_TYPE_STOP_DATA_PROC:
             {
-                CDBG_HIGH("%s: stop data proc", __func__);
+                LOGH("%s: stop data proc", __func__);
                 is_active = FALSE;
 
                 pme->m_saveProcTh.sendCmd(CAMERA_CMD_TYPE_STOP_DATA_PROC,
@@ -2526,7 +2526,7 @@ void *QCameraPostProcessor::dataProcessRoutine(void *data)
             break;
         case CAMERA_CMD_TYPE_DO_NEXT_JOB:
             {
-                CDBG_HIGH("%s: Do next job, active is %d", __func__, is_active);
+                LOGH("%s: Do next job, active is %d", __func__, is_active);
                 if (is_active == TRUE) {
                     qcamera_jpeg_data_t *jpeg_job =
                         (qcamera_jpeg_data_t *)pme->m_inputJpegQ.dequeue();
@@ -2549,7 +2549,7 @@ void *QCameraPostProcessor::dataProcessRoutine(void *data)
                                 pme->sendEvtNotify(CAMERA_MSG_ERROR, UNKNOWN_ERROR, 0);
                             }
                         } else {
-                            CDBG_HIGH("%s : m_ongoingJpegQ is not active!!!", __func__);
+                            LOGH("%s : m_ongoingJpegQ is not active!!!", __func__);
                             pme->releaseJpegJobData(jpeg_job);
                             free(jpeg_job);
                             jpeg_job = NULL;
@@ -2606,7 +2606,7 @@ void *QCameraPostProcessor::dataProcessRoutine(void *data)
             break;
         }
     } while (running);
-    CDBG_HIGH("%s: X", __func__);
+    LOGH("%s: X", __func__);
     return NULL;
 }
 
@@ -2649,7 +2649,7 @@ int32_t QCameraPostProcessor::doReprocess()
     mm_camera_super_buf_t *src_reproc_frame = ppreq_job->src_reproc_frame;
     int8_t mCurReprocCount = ppreq_job->reprocCount;
 
-    CDBG("%s: frame = %p src_frame = %p mCurReprocCount = %d",__func__,
+    LOGD("%s: frame = %p src_frame = %p mCurReprocCount = %d",__func__,
             src_frame,src_reproc_frame,mCurReprocCount);
 
     // find meta data stream and index of meta data frame in the superbuf
@@ -2669,7 +2669,7 @@ int32_t QCameraPostProcessor::doReprocess()
             }
         }
         if (i < src_reproc_frame->num_bufs) {
-            CDBG(" %s: Found Meta data info for reprocessing index = %d", __func__,
+            LOGD(" %s: Found Meta data info for reprocessing index = %d", __func__,
                     (int)meta_buf_index);
             break;
         }
@@ -2714,7 +2714,7 @@ int32_t QCameraPostProcessor::doReprocess()
                     ret = mPPChannels[mCurReprocCount]->doReprocessOffline(pp_job->src_frame,
                             meta_buf);
                 } else {
-                    CDBG_HIGH("%s : m_ongoingJpegQ is not active!!!", __func__);
+                    LOGH("%s : m_ongoingJpegQ is not active!!!", __func__);
                     releaseOngoingPPData(pp_job, this);
                     free(pp_job);
                     pp_job = NULL;
@@ -2723,7 +2723,7 @@ int32_t QCameraPostProcessor::doReprocess()
 
                 m_bufCountPPQ++;
                 if (!m_ongoingPPQ.enqueue((void *)pp_job)) {
-                    CDBG_HIGH("%s : m_ongoingJpegQ is not active!!!", __func__);
+                    LOGH("%s : m_ongoingJpegQ is not active!!!", __func__);
                     releaseOngoingPPData(pp_job, this);
                     free(pp_job);
                     pp_job = NULL;
@@ -2748,7 +2748,7 @@ int32_t QCameraPostProcessor::doReprocess()
                         }
                         extra_pp_job->reprocCount = pp_job->reprocCount;
                         if (!m_ongoingPPQ.enqueue((void *)extra_pp_job)) {
-                            CDBG_HIGH("%s : m_ongoingJpegQ is not active!!!", __func__);
+                            LOGH("%s : m_ongoingJpegQ is not active!!!", __func__);
                             releaseOngoingPPData(extra_pp_job, this);
                             free(extra_pp_job);
                             extra_pp_job = NULL;
@@ -2907,7 +2907,7 @@ int32_t QCameraPostProcessor::setYUVFrameInfo(mm_camera_super_buf_t *recvd_frame
                     m_parent->mParameters.set("snapshot-format", "");
                 }
 
-                CDBG_HIGH("%s: frame width=%d, height=%d, yoff=%d, cbcroff=%d, fmt_string=%s", __func__,
+                LOGH("%s: frame width=%d, height=%d, yoff=%d, cbcroff=%d, fmt_string=%s", __func__,
                         frame_dim.width, frame_dim.height, frame_offset.mp[0].offset, cbcr_offset, fmt_string);
                 return NO_ERROR;
             }
@@ -2939,7 +2939,7 @@ bool QCameraPostProcessor::matchJobId(void *data, void *, void *match_data)
  *==========================================================================*/
 int QCameraPostProcessor::getJpegMemory(omx_jpeg_ouput_buf_t *out_buf)
 {
-    CDBG_HIGH("%s: Allocating jpeg out buffer of size: %d", __func__, out_buf->size);
+    LOGH("%s: Allocating jpeg out buffer of size: %d", __func__, out_buf->size);
     QCameraPostProcessor *procInst = (QCameraPostProcessor *) out_buf->handle;
     camera_memory_t *cam_mem = procInst->m_parent->mGetMemory(out_buf->fd, out_buf->size, 1U,
             procInst->m_parent->mCallbackCookie);

@@ -125,7 +125,7 @@ int QCamera3Memory::cacheOpsInternal(uint32_t index, unsigned int cmd, void *vad
     custom_data.cmd = cmd;
     custom_data.arg = (unsigned long)&cache_inv_data;
 
-    CDBG("%s: addr = %p, fd = %d, handle = %lx length = %d, ION Fd = %d",
+    LOGD("%s: addr = %p, fd = %d, handle = %lx length = %d, ION Fd = %d",
          __func__, cache_inv_data.vaddr, cache_inv_data.fd,
          (unsigned long)cache_inv_data.handle, cache_inv_data.length,
          mMemInfo[index].main_ion_fd);
@@ -744,7 +744,7 @@ int QCamera3GrallocMemory::registerBuffer(buffer_handle_t *buffer,
     int32_t colorSpace = ITU_R_601_FR;
     int32_t idx = -1;
 
-    CDBG("%s: E", __func__);
+    LOGD("%s: E", __func__);
 
     memset(&ion_info_fd, 0, sizeof(ion_info_fd));
 
@@ -786,7 +786,7 @@ int QCamera3GrallocMemory::registerBuffer(buffer_handle_t *buffer,
             goto end;
         }
     }
-    CDBG("%s: idx = %d, fd = %d, size = %d, offset = %d",
+    LOGD("%s: idx = %d, fd = %d, size = %d, offset = %d",
             __func__, idx, mPrivateHandle[idx]->fd,
             mPrivateHandle[idx]->size,
             mPrivateHandle[idx]->offset);
@@ -810,7 +810,7 @@ int QCamera3GrallocMemory::registerBuffer(buffer_handle_t *buffer,
     }
 
 end:
-    CDBG(" %s : X ",__func__);
+    LOGD(" %s : X ",__func__);
     return ret;
 }
 /*===========================================================================
@@ -865,7 +865,7 @@ int32_t QCamera3GrallocMemory::unregisterBuffer(size_t idx)
     int32_t rc = NO_ERROR;
     Mutex::Autolock lock(mLock);
 
-    CDBG("%s: E ", __FUNCTION__);
+    LOGD("%s: E ", __FUNCTION__);
 
     if (MM_CAMERA_MAX_NUM_FRAMES <= idx) {
         ALOGE("%s: Buffer index %d greater than what is supported %d",
@@ -886,7 +886,7 @@ int32_t QCamera3GrallocMemory::unregisterBuffer(size_t idx)
 
     rc = unregisterBufferLocked(idx);
 
-    CDBG(" %s : X ",__FUNCTION__);
+    LOGD(" %s : X ",__FUNCTION__);
 
     return rc;
 }
@@ -905,7 +905,7 @@ void QCamera3GrallocMemory::unregisterBuffers()
     int err = NO_ERROR;
     Mutex::Autolock lock(mLock);
 
-    CDBG("%s: E ", __FUNCTION__);
+    LOGD("%s: E ", __FUNCTION__);
 
     for (uint32_t cnt = mStartIdx; cnt < MM_CAMERA_MAX_NUM_FRAMES; cnt++) {
         if (0 == mMemInfo[cnt].handle) {
@@ -918,7 +918,7 @@ void QCamera3GrallocMemory::unregisterBuffers()
         }
     }
     mBufferCount = 0;
-    CDBG(" %s : X ",__FUNCTION__);
+    LOGD(" %s : X ",__FUNCTION__);
 }
 
 /*===========================================================================

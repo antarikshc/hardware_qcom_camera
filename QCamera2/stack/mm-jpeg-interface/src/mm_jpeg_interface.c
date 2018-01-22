@@ -111,14 +111,14 @@ static int32_t mm_jpeg_intf_start_job(mm_jpeg_job_t* job, uint32_t* job_id)
 
   if (NULL == job ||
     NULL == job_id) {
-    CDBG_ERROR("%s:%d] invalid parameters for job or jobId", __func__, __LINE__);
+    LOGE("%s:%d] invalid parameters for job or jobId", __func__, __LINE__);
     return rc;
   }
 
   pthread_mutex_lock(&g_intf_lock);
   if (NULL == g_jpeg_obj) {
     /* mm_jpeg obj not exists, return error */
-    CDBG_ERROR("%s:%d] mm_jpeg is not opened yet", __func__, __LINE__);
+    LOGE("%s:%d] mm_jpeg is not opened yet", __func__, __LINE__);
     pthread_mutex_unlock(&g_intf_lock);
     return rc;
   }
@@ -148,14 +148,14 @@ static int32_t mm_jpeg_intf_create_session(uint32_t client_hdl,
   int32_t rc = -1;
 
   if (0 == client_hdl || NULL == p_params || NULL == p_session_id) {
-    CDBG_ERROR("%s:%d] invalid client_hdl or jobId", __func__, __LINE__);
+    LOGE("%s:%d] invalid client_hdl or jobId", __func__, __LINE__);
     return rc;
   }
 
   pthread_mutex_lock(&g_intf_lock);
   if (NULL == g_jpeg_obj) {
     /* mm_jpeg obj not exists, return error */
-    CDBG_ERROR("%s:%d] mm_jpeg is not opened yet", __func__, __LINE__);
+    LOGE("%s:%d] mm_jpeg is not opened yet", __func__, __LINE__);
     pthread_mutex_unlock(&g_intf_lock);
     return rc;
   }
@@ -182,14 +182,14 @@ static int32_t mm_jpeg_intf_destroy_session(uint32_t session_id)
   int32_t rc = -1;
 
   if (0 == session_id) {
-    CDBG_ERROR("%s:%d] invalid client_hdl or jobId", __func__, __LINE__);
+    LOGE("%s:%d] invalid client_hdl or jobId", __func__, __LINE__);
     return rc;
   }
 
   pthread_mutex_lock(&g_intf_lock);
   if (NULL == g_jpeg_obj) {
     /* mm_jpeg obj not exists, return error */
-    CDBG_ERROR("%s:%d] mm_jpeg is not opened yet", __func__, __LINE__);
+    LOGE("%s:%d] mm_jpeg is not opened yet", __func__, __LINE__);
     pthread_mutex_unlock(&g_intf_lock);
     return rc;
   }
@@ -216,14 +216,14 @@ static int32_t mm_jpeg_intf_abort_job(uint32_t job_id)
   int32_t rc = -1;
 
   if (0 == job_id) {
-    CDBG_ERROR("%s:%d] invalid jobId", __func__, __LINE__);
+    LOGE("%s:%d] invalid jobId", __func__, __LINE__);
     return rc;
   }
 
   pthread_mutex_lock(&g_intf_lock);
   if (NULL == g_jpeg_obj) {
     /* mm_jpeg obj not exists, return error */
-    CDBG_ERROR("%s:%d] mm_jpeg is not opened yet", __func__, __LINE__);
+    LOGE("%s:%d] mm_jpeg is not opened yet", __func__, __LINE__);
     pthread_mutex_unlock(&g_intf_lock);
     return rc;
   }
@@ -250,14 +250,14 @@ static int32_t mm_jpeg_intf_close(uint32_t client_hdl)
   int32_t rc = -1;
 
   if (0 == client_hdl) {
-    CDBG_ERROR("%s:%d] invalid client_hdl", __func__, __LINE__);
+    LOGE("%s:%d] invalid client_hdl", __func__, __LINE__);
     return rc;
   }
 
   pthread_mutex_lock(&g_intf_lock);
   if (NULL == g_jpeg_obj) {
     /* mm_jpeg obj not exists, return error */
-    CDBG_ERROR("%s:%d] mm_jpeg is not opened yet", __func__, __LINE__);
+    LOGE("%s:%d] mm_jpeg is not opened yet", __func__, __LINE__);
     pthread_mutex_unlock(&g_intf_lock);
     return rc;
   }
@@ -320,7 +320,7 @@ uint32_t jpeg_open(mm_jpeg_ops_t *ops, mm_dimension picture_size)
   if(NULL == g_jpeg_obj) {
     jpeg_obj = (mm_jpeg_obj *)malloc(sizeof(mm_jpeg_obj));
     if(NULL == jpeg_obj) {
-      CDBG_ERROR("%s:%d] no mem", __func__, __LINE__);
+      LOGE("%s:%d] no mem", __func__, __LINE__);
       pthread_mutex_unlock(&g_intf_lock);
       return clnt_hdl;
     }
@@ -334,7 +334,7 @@ uint32_t jpeg_open(mm_jpeg_ops_t *ops, mm_dimension picture_size)
 
     rc = mm_jpeg_init(jpeg_obj);
     if(0 != rc) {
-      CDBG_ERROR("%s:%d] mm_jpeg_init err = %d", __func__, __LINE__, rc);
+      LOGE("%s:%d] mm_jpeg_init err = %d", __func__, __LINE__, rc);
       free(jpeg_obj);
       pthread_mutex_unlock(&g_intf_lock);
       return clnt_hdl;
@@ -358,7 +358,7 @@ uint32_t jpeg_open(mm_jpeg_ops_t *ops, mm_dimension picture_size)
     }
   } else {
     /* failed new client */
-    CDBG_ERROR("%s:%d] mm_jpeg_new_client failed", __func__, __LINE__);
+    LOGE("%s:%d] mm_jpeg_new_client failed", __func__, __LINE__);
 
     if (0 == g_jpeg_obj->num_clients) {
       /* no client, close jpeg */

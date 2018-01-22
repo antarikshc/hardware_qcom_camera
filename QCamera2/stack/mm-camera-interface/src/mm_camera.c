@@ -227,7 +227,7 @@ int32_t mm_camera_enqueue_evt(mm_camera_obj_t *my_obj,
         /* wake up evt cmd thread */
         cam_sem_post(&(my_obj->evt_thread.cmd_sem));
     } else {
-        CDBG_ERROR("%s: No memory for mm_camera_node_t", __func__);
+        LOGE("%s: No memory for mm_camera_node_t", __func__);
         rc = -1;
     }
 
@@ -272,7 +272,7 @@ int32_t mm_camera_open(mm_camera_obj_t *my_obj)
     if (gMmCameraIntfLogLevel < globalLogLevel)
         gMmCameraIntfLogLevel = globalLogLevel;
 
-    CDBG("%s:  begin\n", __func__);
+    LOGD("%s:  begin\n", __func__);
 
     if (NULL == my_obj) {
         goto on_error;
@@ -284,17 +284,17 @@ int32_t mm_camera_open(mm_camera_obj_t *my_obj)
     snprintf(dev_name, sizeof(dev_name), "/dev/%s",
              dev_name_value);
     sscanf(dev_name, "/dev/video%d", &cam_idx);
-    CDBG("%s: dev name = %s, cam_idx = %d", __func__, dev_name, cam_idx);
+    LOGD("%s: dev name = %s, cam_idx = %d", __func__, dev_name, cam_idx);
 
     do{
         n_try--;
         errno = 0;
         my_obj->ctrl_fd = open(dev_name, O_RDWR | O_NONBLOCK);
-        CDBG("%s:  ctrl_fd = %d, errno == %d", __func__, my_obj->ctrl_fd, errno);
+        LOGD("%s:  ctrl_fd = %d, errno == %d", __func__, my_obj->ctrl_fd, errno);
         if((my_obj->ctrl_fd >= 0) ||
                 (errno != EIO && errno != ETIMEDOUT && errno != ENODEV) ||
                 (n_try <= 0 )) {
-            CDBG_HIGH("%s:  opened, break out while loop", __func__);
+            LOGH("%s:  opened, break out while loop", __func__);
             if (my_obj->ctrl_fd < 0) {
                     ALOGE("%s: Failed to open %s: %s(%d).", __func__, dev_name,
                             strerror(-errno), errno);
@@ -307,7 +307,7 @@ int32_t mm_camera_open(mm_camera_obj_t *my_obj)
     }while (n_try > 0);
 
     if (my_obj->ctrl_fd < 0) {
-        CDBG_ERROR("%s: cannot open control fd of '%s' (%s)\n",
+        LOGE("%s: cannot open control fd of '%s' (%s)\n",
                  __func__, dev_name, strerror(errno));
         if (errno == EBUSY)
             rc = -EUSERS;
@@ -321,18 +321,18 @@ int32_t mm_camera_open(mm_camera_obj_t *my_obj)
     do {
         n_try--;
         my_obj->ds_fd = mm_camera_socket_create(cam_idx, MM_CAMERA_SOCK_TYPE_UDP);
-        CDBG("%s:  ds_fd = %d, errno = %d", __func__, my_obj->ds_fd, errno);
+        LOGD("%s:  ds_fd = %d, errno = %d", __func__, my_obj->ds_fd, errno);
         if((my_obj->ds_fd >= 0) || (n_try <= 0 )) {
-            CDBG("%s:  opened, break out while loop", __func__);
+            LOGD("%s:  opened, break out while loop", __func__);
             break;
         }
-        CDBG("%s:failed with I/O error retrying after %d milli-seconds",
+        LOGD("%s:failed with I/O error retrying after %d milli-seconds",
              __func__, sleep_msec);
         usleep(sleep_msec * 1000U);
     } while (n_try > 0);
 
     if (my_obj->ds_fd < 0) {
-        CDBG_ERROR("%s: cannot open domain socket fd of '%s'(%s)\n",
+        LOGE("%s: cannot open domain socket fd of '%s'(%s)\n",
                  __func__, dev_name, strerror(errno));
         rc = -1;
         goto on_error;
@@ -343,7 +343,7 @@ int32_t mm_camera_open(mm_camera_obj_t *my_obj)
     pthread_mutex_init(&my_obj->evt_lock, NULL);
     PTHREAD_COND_INIT(&my_obj->evt_cond);
 
-    CDBG("%s : Launch evt Thread in Cam Open",__func__);
+    LOGD("%s : Launch evt Thread in Cam Open",__func__);
     snprintf(my_obj->evt_thread.threadName, THREAD_NAME_SIZE, "CAM_Dispatch");
     mm_camera_cmd_thread_launch(&my_obj->evt_thread,
                                 mm_camera_dispatch_app_event,
@@ -351,7 +351,7 @@ int32_t mm_camera_open(mm_camera_obj_t *my_obj)
 
     /* launch event poll thread
      * we will add evt fd into event poll thread upon user first register for evt */
-    CDBG("%s : Launch evt Poll Thread in Cam Open", __func__);
+    LOGD("%s : Launch evt Poll Thread in Cam Open", __func__);
     snprintf(my_obj->evt_thread.threadName, THREAD_NAME_SIZE, "CAM_Poll");
     mm_camera_poll_thread_launch(&my_obj->evt_poll_thread,
                                  MM_CAMERA_POLL_TYPE_EVT);
@@ -360,18 +360,18 @@ int32_t mm_camera_open(mm_camera_obj_t *my_obj)
     /* unlock cam_lock, we need release global intf_lock in camera_open(),
      * in order not block operation of other Camera in dual camera use case.*/
     pthread_mutex_unlock(&my_obj->cam_lock);
-    CDBG("%s:  end (rc = %d)\n", __func__, rc);
+    LOGD("%s:  end (rc = %d)\n", __func__, rc);
     return rc;
 
 on_error:
 
     if (NULL == dev_name_value) {
-        CDBG_ERROR("%s: Invalid device name\n", __func__);
+        LOGE("%s: Invalid device name\n", __func__);
         rc = -1;
     }
 
     if (NULL == my_obj) {
-        CDBG_ERROR("%s: Invalid camera object\n", __func__);
+        LOGE("%s: Invalid camera object\n", __func__);
         rc = -1;
     } else {
         if (my_obj->ctrl_fd >= 0) {
@@ -406,13 +406,13 @@ on_error:
  *==========================================================================*/
 int32_t mm_camera_close(mm_camera_obj_t *my_obj)
 {
-    CDBG("%s : unsubscribe evt", __func__);
+    LOGD("%s : unsubscribe evt", __func__);
     mm_camera_evt_sub(my_obj, FALSE);
 
-    CDBG("%s : Close evt Poll Thread in Cam Close",__func__);
+    LOGD("%s : Close evt Poll Thread in Cam Close",__func__);
     mm_camera_poll_thread_release(&my_obj->evt_poll_thread);
 
-    CDBG("%s : Close evt cmd Thread in Cam Close",__func__);
+    LOGD("%s : Close evt cmd Thread in Cam Close",__func__);
     mm_camera_cmd_thread_release(&my_obj->evt_thread);
 
     if(my_obj->ctrl_fd >= 0) {
@@ -630,7 +630,7 @@ int32_t mm_camera_query_capability(mm_camera_obj_t *my_obj)
     memset(&cap, 0, sizeof(cap));
     rc = ioctl(my_obj->ctrl_fd, VIDIOC_QUERYCAP, &cap);
     if (rc != 0) {
-        CDBG_ERROR("%s: cannot get camera capabilities, rc = %d\n", __func__, rc);
+        LOGE("%s: cannot get camera capabilities, rc = %d\n", __func__, rc);
     }
 
     pthread_mutex_unlock(&my_obj->cam_lock);
@@ -1668,7 +1668,7 @@ int32_t mm_camera_evt_sub(mm_camera_obj_t * my_obj,
         /* unsubscribe */
         rc = ioctl(my_obj->ctrl_fd, VIDIOC_UNSUBSCRIBE_EVENT, &sub);
         if (rc < 0) {
-            CDBG_ERROR("%s: unsubscribe event rc = %d", __func__, rc);
+            LOGE("%s: unsubscribe event rc = %d", __func__, rc);
             return rc;
         }
         /* remove evt fd from the polling thraed when unreg the last event */
@@ -1678,7 +1678,7 @@ int32_t mm_camera_evt_sub(mm_camera_obj_t * my_obj,
     } else {
         rc = ioctl(my_obj->ctrl_fd, VIDIOC_SUBSCRIBE_EVENT, &sub);
         if (rc < 0) {
-            CDBG_ERROR("%s: subscribe event rc = %d", __func__, rc);
+            LOGE("%s: subscribe event rc = %d", __func__, rc);
             return rc;
         }
         /* add evt fd to polling thread when subscribe the first event */
@@ -1860,7 +1860,7 @@ int32_t mm_camera_util_s_ctrl(int32_t fd,  uint32_t id, int32_t *value)
     }
     rc = ioctl(fd, VIDIOC_S_CTRL, &control);
 
-    CDBG("%s: fd=%d, S_CTRL, id=0x%x, value = %p, rc = %d\n",
+    LOGD("%s: fd=%d, S_CTRL, id=0x%x, value = %p, rc = %d\n",
          __func__, fd, id, value, rc);
     if (value != NULL) {
         *value = control.value;
@@ -1893,7 +1893,7 @@ int32_t mm_camera_util_g_ctrl( int32_t fd, uint32_t id, int32_t *value)
         control.value = *value;
     }
     rc = ioctl(fd, VIDIOC_G_CTRL, &control);
-    CDBG("%s: fd=%d, G_CTRL, id=0x%x, rc = %d\n", __func__, fd, id, rc);
+    LOGD("%s: fd=%d, G_CTRL, id=0x%x, rc = %d\n", __func__, fd, id, rc);
     if (value != NULL) {
         *value = control.value;
     }
@@ -1920,7 +1920,7 @@ int32_t mm_camera_channel_advanced_capture(mm_camera_obj_t *my_obj,
             uint32_t ch_id, mm_camera_advanced_capture_t type,
             uint32_t trigger, void *in_value)
 {
-    CDBG("%s: E type = %d",__func__, type);
+    LOGD("%s: E type = %d",__func__, type);
     int32_t rc = -1;
     mm_channel_t * ch_obj =
         mm_camera_util_get_channel_by_handler(my_obj, ch_id);
@@ -1967,6 +1967,6 @@ int32_t mm_camera_channel_advanced_capture(mm_camera_obj_t *my_obj,
         pthread_mutex_unlock(&my_obj->cam_lock);
     }
 
-    CDBG("%s: X",__func__);
+    LOGD("%s: X",__func__);
     return rc;
 }

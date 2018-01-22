@@ -166,11 +166,11 @@ void QCamera3CropRegionMapper::toSensor(int32_t& crop_left, int32_t& crop_top,
     crop_width = crop_width * mSensorW / mActiveArrayW;
     crop_height = crop_height * mSensorH / mActiveArrayH;
 
-    CDBG("%s: before bounding left %d, top %d, width %d, height %d",
+    LOGD("%s: before bounding left %d, top %d, width %d, height %d",
         __func__, crop_left, crop_top, crop_width, crop_height);
     boundToSize(crop_left, crop_top, crop_width, crop_height,
             mSensorW, mSensorH);
-    CDBG("%s: after bounding left %d, top %d, width %d, height %d",
+    LOGD("%s: after bounding left %d, top %d, width %d, height %d",
         __func__, crop_left, crop_top, crop_width, crop_height);
 }
 

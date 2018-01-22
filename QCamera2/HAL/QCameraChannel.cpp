@@ -897,7 +897,7 @@ int32_t QCameraReprocessChannel::addReprocStreamsFromSource(
     padding.width_padding = MAX(padding.width_padding, padding.height_padding);
     padding.height_padding = padding.width_padding;
 
-    CDBG("%s : %d: num of src stream = %d", __func__, __LINE__, pSrcChannel->getNumOfStreams());
+    LOGD("%s : %d: num of src stream = %d", __func__, __LINE__, pSrcChannel->getNumOfStreams());
 
     for (uint32_t i = 0; i < pSrcChannel->getNumOfStreams(); i++) {
         pStream = pSrcChannel->getStreamByIndex(i);
@@ -1053,7 +1053,7 @@ int32_t QCameraReprocessChannel::addReprocStreamsFromSource(
                     streamInfo->dim.height =
                             streamInfo->reprocess_config.pp_feature_config.scale_param.output_height;
                 }
-                CDBG_HIGH("%s: stream width=%d, height=%d.",
+                LOGH("%s: stream width=%d, height=%d.",
                         __func__, streamInfo->dim.width, streamInfo->dim.height);
             }
 
@@ -1328,7 +1328,7 @@ int32_t QCameraReprocessChannel::doReprocess(mm_camera_super_buf_t *frame,
                 param.reprocess.meta_buf_index = meta_buf_index;
             }
 
-            CDBG_HIGH("Frame for reprocessing id = %d buf Id = %d meta index = %d",
+            LOGH("Frame for reprocessing id = %d buf Id = %d meta index = %d",
                     param.reprocess.frame_idx, param.reprocess.buf_index,
                     param.reprocess.meta_buf_index);
 

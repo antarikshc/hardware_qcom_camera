@@ -44,7 +44,7 @@ static void mm_app_metadata_notify_cb(mm_camera_super_buf_t *bufs,
   metadata_buffer_t *pMetadata;
 
   if (NULL == bufs || NULL == user_data) {
-      CDBG_ERROR("%s: bufs or user_data are not valid ", __func__);
+      LOGE("%s: bufs or user_data are not valid ", __func__);
       return;
   }
   frame = bufs->bufs[0];
@@ -58,7 +58,7 @@ static void mm_app_metadata_notify_cb(mm_camera_super_buf_t *bufs,
   }
 
   if (NULL == channel) {
-      CDBG_ERROR("%s: Channel object is NULL ", __func__);
+      LOGE("%s: Channel object is NULL ", __func__);
       return;
   }
 
@@ -71,7 +71,7 @@ static void mm_app_metadata_notify_cb(mm_camera_super_buf_t *bufs,
   }
 
   if (NULL == p_stream) {
-      CDBG_ERROR("%s: cannot find metadata stream", __func__);
+      LOGE("%s: cannot find metadata stream", __func__);
       return;
   }
 
@@ -87,7 +87,7 @@ static void mm_app_metadata_notify_cb(mm_camera_super_buf_t *bufs,
     /* The app will free the meta data, we don't need to bother here */
     pme->metadata = malloc(sizeof(metadata_buffer_t));
     if (NULL == pme->metadata) {
-        CDBG_ERROR("%s: Canot allocate metadata memory\n", __func__);
+        LOGE("%s: Canot allocate metadata memory\n", __func__);
         return;
     }
   }
@@ -98,10 +98,10 @@ static void mm_app_metadata_notify_cb(mm_camera_super_buf_t *bufs,
         pMetadata) {
     if (focus_data->focus_state == CAM_AF_FOCUSED ||
       focus_data->focus_state == CAM_AF_NOT_FOCUSED) {
-      CDBG_ERROR("%s: AutoFocus Done Call Back Received\n",__func__);
+      LOGE("%s: AutoFocus Done Call Back Received\n",__func__);
       mm_camera_app_done();
     } else if (focus_data->focus_state == CAM_AF_NOT_FOCUSED) {
-      CDBG_ERROR("%s: AutoFocus failed\n",__func__);
+      LOGE("%s: AutoFocus failed\n",__func__);
       mm_camera_app_done();
     }
   }
@@ -109,7 +109,7 @@ static void mm_app_metadata_notify_cb(mm_camera_super_buf_t *bufs,
   if (MM_CAMERA_OK != pme->cam->ops->qbuf(bufs->camera_handle,
                                           bufs->ch_id,
                                           frame)) {
-      CDBG_ERROR("%s: Failed in Preview Qbuf\n", __func__);
+      LOGE("%s: Failed in Preview Qbuf\n", __func__);
   }
   mm_app_cache_ops((mm_camera_app_meminfo_t *)frame->mem_info,
                    ION_IOC_INV_CACHES);
@@ -125,7 +125,7 @@ static void mm_app_preview_notify_cb(mm_camera_super_buf_t *bufs,
     mm_camera_test_obj_t *pme = (mm_camera_test_obj_t *)user_data;
 
     if (NULL == bufs || NULL == user_data) {
-        CDBG_ERROR("%s: bufs or user_data are not valid ", __func__);
+        LOGE("%s: bufs or user_data are not valid ", __func__);
         return;
     }
 
@@ -139,7 +139,7 @@ static void mm_app_preview_notify_cb(mm_camera_super_buf_t *bufs,
         }
     }
     if (NULL == channel) {
-        CDBG_ERROR("%s: Channel object is NULL ", __func__);
+        LOGE("%s: Channel object is NULL ", __func__);
         return;
     }
     /* find preview stream */
@@ -151,7 +151,7 @@ static void mm_app_preview_notify_cb(mm_camera_super_buf_t *bufs,
     }
 
     if (NULL == p_stream) {
-        CDBG_ERROR("%s: cannot find preview stream", __func__);
+        LOGE("%s: cannot find preview stream", __func__);
         return;
     }
 
@@ -174,18 +174,18 @@ static void mm_app_preview_notify_cb(mm_camera_super_buf_t *bufs,
     }
 #endif
     if (pme->user_preview_cb) {
-        CDBG_ERROR("[DBG] %s, user defined own preview cb. calling it...", __func__);
+        LOGE("[DBG] %s, user defined own preview cb. calling it...", __func__);
         pme->user_preview_cb(frame);
     }
     if (MM_CAMERA_OK != pme->cam->ops->qbuf(bufs->camera_handle,
                 bufs->ch_id,
                 frame)) {
-        CDBG_ERROR("%s: Failed in Preview Qbuf\n", __func__);
+        LOGE("%s: Failed in Preview Qbuf\n", __func__);
     }
     mm_app_cache_ops((mm_camera_app_meminfo_t *)frame->mem_info,
             ION_IOC_INV_CACHES);
 
-    CDBG("%s: END\n", __func__);
+    LOGD("%s: END\n", __func__);
 }
 
 static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
@@ -202,10 +202,10 @@ static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
     mm_camera_buf_def_t *m_frame = NULL;
     mm_camera_buf_def_t *md_frame = NULL;
 
-    CDBG("%s: BEGIN\n", __func__);
+    LOGD("%s: BEGIN\n", __func__);
 
     if (NULL == bufs || NULL == user_data) {
-        CDBG_ERROR("%s: bufs or user_data are not valid ", __func__);
+        LOGE("%s: bufs or user_data are not valid ", __func__);
         return;
     }
 
@@ -217,7 +217,7 @@ static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
         }
     }
     if (NULL == channel) {
-        CDBG_ERROR("%s: Wrong channel id (%d)", __func__, bufs->ch_id);
+        LOGE("%s: Wrong channel id (%d)", __func__, bufs->ch_id);
         return;
     }
 
@@ -229,7 +229,7 @@ static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
         }
     }
     if (NULL == p_stream) {
-        CDBG_ERROR("%s: cannot find preview stream", __func__);
+        LOGE("%s: cannot find preview stream", __func__);
         return;
     }
 
@@ -241,7 +241,7 @@ static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
         }
     }
     if (NULL == m_stream) {
-        CDBG_ERROR("%s: cannot find snapshot stream", __func__);
+        LOGE("%s: cannot find snapshot stream", __func__);
         return;
     }
 
@@ -253,7 +253,7 @@ static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
         }
     }
     if (NULL == md_stream) {
-        CDBG_ERROR("%s: cannot find metadata stream", __func__);
+        LOGE("%s: cannot find metadata stream", __func__);
     }
 
     /* find preview frame */
@@ -296,11 +296,11 @@ static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
     }
 
     if (!m_frame || !p_frame) {
-        CDBG_ERROR("%s: cannot find preview/snapshot frame", __func__);
+        LOGE("%s: cannot find preview/snapshot frame", __func__);
         return;
     }
 
-    CDBG("%s: ZSL CB with fb_fd = %d, m_frame = %p, p_frame = %p \n",
+    LOGD("%s: ZSL CB with fb_fd = %d, m_frame = %p, p_frame = %p \n",
          __func__,
          pme->fb_fd,
          m_frame,
@@ -323,10 +323,10 @@ static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
                     md_stream);
 
             if (MM_CAMERA_OK != rc ) {
-                CDBG_ERROR("%s: reprocess failed rc = %d", __func__, rc);
+                LOGE("%s: reprocess failed rc = %d", __func__, rc);
             }
         } else {
-            CDBG_ERROR("%s: md_frame is null\n", __func__);
+            LOGE("%s: md_frame is null\n", __func__);
         }
 
       return;
@@ -335,7 +335,7 @@ static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
     if ( pme->encodeJpeg ) {
         pme->jpeg_buf.buf.buffer = (uint8_t *)malloc(m_frame->frame_len);
         if ( NULL == pme->jpeg_buf.buf.buffer ) {
-            CDBG_ERROR("%s: error allocating jpeg output buffer", __func__);
+            LOGE("%s: error allocating jpeg output buffer", __func__);
             goto exit;
         }
 
@@ -343,7 +343,7 @@ static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
         /* create a new jpeg encoding session */
         rc = createEncodingSession(pme, m_stream, m_frame);
         if (0 != rc) {
-            CDBG_ERROR("%s: error creating jpeg session", __func__);
+            LOGE("%s: error creating jpeg session", __func__);
             free(pme->jpeg_buf.buf.buffer);
             goto exit;
         }
@@ -355,7 +355,7 @@ static void mm_app_zsl_notify_cb(mm_camera_super_buf_t *bufs,
         if (MM_CAMERA_OK != pme->cam->ops->qbuf(bufs->camera_handle,
                                                 bufs->ch_id,
                                                 m_frame)) {
-            CDBG_ERROR("%s: Failed in main Qbuf\n", __func__);
+            LOGE("%s: Failed in main Qbuf\n", __func__);
         }
         mm_app_cache_ops((mm_camera_app_meminfo_t *)m_frame->mem_info,
                          ION_IOC_INV_CACHES);
@@ -366,7 +366,7 @@ exit:
     if (MM_CAMERA_OK != pme->cam->ops->qbuf(bufs->camera_handle,
                                             bufs->ch_id,
                                             p_frame)) {
-        CDBG_ERROR("%s: Failed in preview Qbuf\n", __func__);
+        LOGE("%s: Failed in preview Qbuf\n", __func__);
     }
     mm_app_cache_ops((mm_camera_app_meminfo_t *)p_frame->mem_info,
                      ION_IOC_INV_CACHES);
@@ -375,13 +375,13 @@ exit:
       if (MM_CAMERA_OK != pme->cam->ops->qbuf(bufs->camera_handle,
                                               bufs->ch_id,
                                               md_frame)) {
-          CDBG_ERROR("%s: Failed in metadata Qbuf\n", __func__);
+          LOGE("%s: Failed in metadata Qbuf\n", __func__);
       }
       mm_app_cache_ops((mm_camera_app_meminfo_t *)md_frame->mem_info,
                        ION_IOC_INV_CACHES);
     }
 
-    CDBG("%s: END\n", __func__);
+    LOGD("%s: END\n", __func__);
 }
 
 mm_camera_stream_t * mm_app_add_metadata_stream(mm_camera_test_obj_t *test_obj,
@@ -396,7 +396,7 @@ mm_camera_stream_t * mm_app_add_metadata_stream(mm_camera_test_obj_t *test_obj,
 
     stream = mm_app_add_stream(test_obj, channel);
     if (NULL == stream) {
-        CDBG_ERROR("%s: add stream failed\n", __func__);
+        LOGE("%s: add stream failed\n", __func__);
         return NULL;
     }
 
@@ -421,7 +421,7 @@ mm_camera_stream_t * mm_app_add_metadata_stream(mm_camera_test_obj_t *test_obj,
 
     rc = mm_app_config_stream(test_obj, channel, stream, &stream->s_config);
     if (MM_CAMERA_OK != rc) {
-        CDBG_ERROR("%s:config preview stream err=%d\n", __func__, rc);
+        LOGE("%s:config preview stream err=%d\n", __func__, rc);
         return NULL;
     }
 
@@ -440,7 +440,7 @@ mm_camera_stream_t * mm_app_add_preview_stream(mm_camera_test_obj_t *test_obj,
 
     stream = mm_app_add_stream(test_obj, channel);
     if (NULL == stream) {
-        CDBG_ERROR("%s: add stream failed\n", __func__);
+        LOGE("%s: add stream failed\n", __func__);
         return NULL;
     }
     stream->s_config.mem_vtbl.get_bufs = mm_app_stream_initbuf;
@@ -472,7 +472,7 @@ mm_camera_stream_t * mm_app_add_preview_stream(mm_camera_test_obj_t *test_obj,
 
     rc = mm_app_config_stream(test_obj, channel, stream, &stream->s_config);
     if (MM_CAMERA_OK != rc) {
-        CDBG_ERROR("%s:config preview stream err=%d\n", __func__, rc);
+        LOGE("%s:config preview stream err=%d\n", __func__, rc);
         return NULL;
     }
 
@@ -492,7 +492,7 @@ mm_camera_stream_t * mm_app_add_raw_stream(mm_camera_test_obj_t *test_obj,
 
     stream = mm_app_add_stream(test_obj, channel);
     if (NULL == stream) {
-        CDBG_ERROR("%s: add stream failed\n", __func__);
+        LOGE("%s: add stream failed\n", __func__);
         return NULL;
     }
 
@@ -525,7 +525,7 @@ mm_camera_stream_t * mm_app_add_raw_stream(mm_camera_test_obj_t *test_obj,
 
     rc = mm_app_config_stream(test_obj, channel, stream, &stream->s_config);
     if (MM_CAMERA_OK != rc) {
-        CDBG_ERROR("%s:config preview stream err=%d\n", __func__, rc);
+        LOGE("%s:config preview stream err=%d\n", __func__, rc);
         return NULL;
     }
 
@@ -545,7 +545,7 @@ mm_camera_stream_t * mm_app_add_snapshot_stream(mm_camera_test_obj_t *test_obj,
 
     stream = mm_app_add_stream(test_obj, channel);
     if (NULL == stream) {
-        CDBG_ERROR("%s: add stream failed\n", __func__);
+        LOGE("%s: add stream failed\n", __func__);
         return NULL;
     }
 
@@ -580,7 +580,7 @@ mm_camera_stream_t * mm_app_add_snapshot_stream(mm_camera_test_obj_t *test_obj,
 
     rc = mm_app_config_stream(test_obj, channel, stream, &stream->s_config);
     if (MM_CAMERA_OK != rc) {
-        CDBG_ERROR("%s:config preview stream err=%d\n", __func__, rc);
+        LOGE("%s:config preview stream err=%d\n", __func__, rc);
         return NULL;
     }
 
@@ -598,7 +598,7 @@ mm_camera_channel_t * mm_app_add_preview_channel(mm_camera_test_obj_t *test_obj)
                                  NULL,
                                  NULL);
     if (NULL == channel) {
-        CDBG_ERROR("%s: add channel failed", __func__);
+        LOGE("%s: add channel failed", __func__);
         return NULL;
     }
 
@@ -608,7 +608,7 @@ mm_camera_channel_t * mm_app_add_preview_channel(mm_camera_test_obj_t *test_obj)
                                        (void *)test_obj,
                                        PREVIEW_BUF_NUM);
     if (NULL == stream) {
-        CDBG_ERROR("%s: add stream failed\n", __func__);
+        LOGE("%s: add stream failed\n", __func__);
         mm_app_del_channel(test_obj, channel);
         return NULL;
     }
@@ -625,7 +625,7 @@ int mm_app_stop_and_del_channel(mm_camera_test_obj_t *test_obj,
 
     rc = mm_app_stop_channel(test_obj, channel);
     if (MM_CAMERA_OK != rc) {
-        CDBG_ERROR("%s:Stop Preview failed rc=%d\n", __func__, rc);
+        LOGE("%s:Stop Preview failed rc=%d\n", __func__, rc);
     }
 
     if (channel->num_streams <= MAX_STREAM_NUM_IN_BUNDLE) {
@@ -633,16 +633,16 @@ int mm_app_stop_and_del_channel(mm_camera_test_obj_t *test_obj,
             stream = &channel->streams[i];
             rc = mm_app_del_stream(test_obj, channel, stream);
             if (MM_CAMERA_OK != rc) {
-                CDBG_ERROR("%s:del stream(%d) failed rc=%d\n", __func__, i, rc);
+                LOGE("%s:del stream(%d) failed rc=%d\n", __func__, i, rc);
             }
         }
     } else {
-        CDBG_ERROR("%s: num_streams = %d. Should not be more than %d\n",
+        LOGE("%s: num_streams = %d. Should not be more than %d\n",
             __func__, channel->num_streams, MAX_STREAM_NUM_IN_BUNDLE);
     }
     rc = mm_app_del_channel(test_obj, channel);
     if (MM_CAMERA_OK != rc) {
-        CDBG_ERROR("%s:delete channel failed rc=%d\n", __func__, rc);
+        LOGE("%s:delete channel failed rc=%d\n", __func__, rc);
     }
 
     return rc;
@@ -658,7 +658,7 @@ int mm_app_start_preview(mm_camera_test_obj_t *test_obj)
 
     channel =  mm_app_add_preview_channel(test_obj);
     if (NULL == channel) {
-        CDBG_ERROR("%s: add channel failed", __func__);
+        LOGE("%s: add channel failed", __func__);
         return -MM_CAMERA_E_GENERAL;
     }
 
@@ -668,14 +668,14 @@ int mm_app_start_preview(mm_camera_test_obj_t *test_obj)
                                             (void *)test_obj,
                                             PREVIEW_BUF_NUM);
     if (NULL == s_metadata) {
-        CDBG_ERROR("%s: add metadata stream failed\n", __func__);
+        LOGE("%s: add metadata stream failed\n", __func__);
         mm_app_del_channel(test_obj, channel);
         return rc;
     }
 
     rc = mm_app_start_channel(test_obj, channel);
     if (MM_CAMERA_OK != rc) {
-        CDBG_ERROR("%s:start preview failed rc=%d\n", __func__, rc);
+        LOGE("%s:start preview failed rc=%d\n", __func__, rc);
         if (channel->num_streams <= MAX_STREAM_NUM_IN_BUNDLE) {
             for (i = 0; i < channel->num_streams; i++) {
                 stream = &channel->streams[i];
@@ -698,7 +698,7 @@ int mm_app_stop_preview(mm_camera_test_obj_t *test_obj)
 
     rc = mm_app_stop_and_del_channel(test_obj, channel);
     if (MM_CAMERA_OK != rc) {
-        CDBG_ERROR("%s:Stop Preview failed rc=%d\n", __func__, rc);
+        LOGE("%s:Stop Preview failed rc=%d\n", __func__, rc);
     }
 
     return rc;
@@ -725,7 +725,7 @@ int mm_app_start_preview_zsl(mm_camera_test_obj_t *test_obj)
                                  mm_app_zsl_notify_cb,
                                  test_obj);
     if (NULL == channel) {
-        CDBG_ERROR("%s: add channel failed", __func__);
+        LOGE("%s: add channel failed", __func__);
         return -MM_CAMERA_E_GENERAL;
     }
 
@@ -735,7 +735,7 @@ int mm_app_start_preview_zsl(mm_camera_test_obj_t *test_obj)
                                           (void *)test_obj,
                                           PREVIEW_BUF_NUM);
     if (NULL == s_preview) {
-        CDBG_ERROR("%s: add preview stream failed\n", __func__);
+        LOGE("%s: add preview stream failed\n", __func__);
         mm_app_del_channel(test_obj, channel);
         return rc;
     }
@@ -746,7 +746,7 @@ int mm_app_start_preview_zsl(mm_camera_test_obj_t *test_obj)
                                             (void *)test_obj,
                                             PREVIEW_BUF_NUM);
     if (NULL == s_metadata) {
-        CDBG_ERROR("%s: add metadata stream failed\n", __func__);
+        LOGE("%s: add metadata stream failed\n", __func__);
         mm_app_del_channel(test_obj, channel);
         return rc;
     }
@@ -758,7 +758,7 @@ int mm_app_start_preview_zsl(mm_camera_test_obj_t *test_obj)
                                         PREVIEW_BUF_NUM,
                                         0);
     if (NULL == s_main) {
-        CDBG_ERROR("%s: add main snapshot stream failed\n", __func__);
+        LOGE("%s: add main snapshot stream failed\n", __func__);
         mm_app_del_stream(test_obj, channel, s_preview);
         mm_app_del_channel(test_obj, channel);
         return rc;
@@ -766,7 +766,7 @@ int mm_app_start_preview_zsl(mm_camera_test_obj_t *test_obj)
 
     rc = mm_app_start_channel(test_obj, channel);
     if (MM_CAMERA_OK != rc) {
-        CDBG_ERROR("%s:start zsl failed rc=%d\n", __func__, rc);
+        LOGE("%s:start zsl failed rc=%d\n", __func__, rc);
         mm_app_del_stream(test_obj, channel, s_preview);
         mm_app_del_stream(test_obj, channel, s_metadata);
         mm_app_del_stream(test_obj, channel, s_main);
@@ -776,7 +776,7 @@ int mm_app_start_preview_zsl(mm_camera_test_obj_t *test_obj)
 
     if ( test_obj->enable_reproc ) {
         if ( NULL == mm_app_add_reprocess_channel(test_obj, s_main) ) {
-            CDBG_ERROR("%s: Reprocess channel failed to initialize \n", __func__);
+            LOGE("%s: Reprocess channel failed to initialize \n", __func__);
             mm_app_del_stream(test_obj, channel, s_preview);
 #ifdef USE_METADATA_STREAM
             mm_app_del_stream(test_obj, channel, s_metadata);
@@ -787,7 +787,7 @@ int mm_app_start_preview_zsl(mm_camera_test_obj_t *test_obj)
         }
         rc = mm_app_start_reprocess(test_obj);
         if (MM_CAMERA_OK != rc) {
-            CDBG_ERROR("%s: reprocess start failed rc=%d\n", __func__, rc);
+            LOGE("%s: reprocess start failed rc=%d\n", __func__, rc);
             mm_app_del_stream(test_obj, channel, s_preview);
 #ifdef USE_METADATA_STREAM
             mm_app_del_stream(test_obj, channel, s_metadata);
@@ -810,7 +810,7 @@ int mm_app_stop_preview_zsl(mm_camera_test_obj_t *test_obj)
 
     rc = mm_app_stop_and_del_channel(test_obj, channel);
     if (MM_CAMERA_OK != rc) {
-        CDBG_ERROR("%s:Stop Preview failed rc=%d\n", __func__, rc);
+        LOGE("%s:Stop Preview failed rc=%d\n", __func__, rc);
     }
 
     if ( test_obj->enable_reproc ) {
@@ -831,7 +831,7 @@ int mm_app_initialize_fb(mm_camera_test_obj_t *test_obj)
 
     test_obj->fb_fd = open(FB_PATH, O_RDWR);
     if ( 0 > test_obj->fb_fd ) {
-        CDBG_ERROR("%s: FB device open failed rc=%d, %s\n",
+        LOGE("%s: FB device open failed rc=%d, %s\n",
                    __func__,
                    -errno,
                    strerror(errno));
@@ -841,7 +841,7 @@ int mm_app_initialize_fb(mm_camera_test_obj_t *test_obj)
 
     rc = ioctl(test_obj->fb_fd, FBIOGET_VSCREENINFO, &test_obj->vinfo);
     if ( MM_CAMERA_OK != rc ) {
-        CDBG_ERROR("%s: Can not retrieve screen info rc=%d, %s\n",
+        LOGE("%s: Can not retrieve screen info rc=%d, %s\n",
                    __func__,
                    -errno,
                    strerror(errno));
@@ -852,7 +852,7 @@ int mm_app_initialize_fb(mm_camera_test_obj_t *test_obj)
     if ( ( 0 == test_obj->vinfo.yres_virtual ) ||
          ( 0 == test_obj->vinfo.yres ) ||
          ( test_obj->vinfo.yres > test_obj->vinfo.yres_virtual ) ) {
-        CDBG_ERROR("%s: Invalid FB virtual yres: %d, yres: %d\n",
+        LOGE("%s: Invalid FB virtual yres: %d, yres: %d\n",
                    __func__,
                    test_obj->vinfo.yres_virtual,
                    test_obj->vinfo.yres);
@@ -863,7 +863,7 @@ int mm_app_initialize_fb(mm_camera_test_obj_t *test_obj)
     if ( ( 0 == test_obj->vinfo.xres_virtual ) ||
          ( 0 == test_obj->vinfo.xres ) ||
          ( test_obj->vinfo.xres > test_obj->vinfo.xres_virtual ) ) {
-        CDBG_ERROR("%s: Invalid FB virtual xres: %d, xres: %d\n",
+        LOGE("%s: Invalid FB virtual xres: %d, xres: %d\n",
                    __func__,
                    test_obj->vinfo.xres_virtual,
                    test_obj->vinfo.xres);
@@ -903,7 +903,7 @@ int mm_app_initialize_fb(mm_camera_test_obj_t *test_obj)
                    test_obj->fb_fd,
                    0);
     if ( MAP_FAILED  == fb_base ) {
-            CDBG_ERROR("%s: ( Error while memory mapping frame buffer %s",
+            LOGE("%s: ( Error while memory mapping frame buffer %s",
                        __func__,
                        strerror(errno));
             rc = -errno;
@@ -913,7 +913,7 @@ int mm_app_initialize_fb(mm_camera_test_obj_t *test_obj)
     memset(fb_base, 0, test_obj->slice_size);
 
     if (ioctl(test_obj->fb_fd, FBIOPAN_DISPLAY, &test_obj->vinfo) < 0) {
-        CDBG_ERROR("%s : FBIOPAN_DISPLAY failed!", __func__);
+        LOGE("%s : FBIOPAN_DISPLAY failed!", __func__);
         rc = -errno;
         goto FAIL;
     }
@@ -922,12 +922,12 @@ int mm_app_initialize_fb(mm_camera_test_obj_t *test_obj)
     test_obj->data_overlay.id = (uint32_t)MSMFB_NEW_REQUEST;
     rc = ioctl(test_obj->fb_fd, MSMFB_OVERLAY_SET, &test_obj->data_overlay);
     if (rc < 0) {
-        CDBG_ERROR("%s : MSMFB_OVERLAY_SET failed! err=%d\n",
+        LOGE("%s : MSMFB_OVERLAY_SET failed! err=%d\n",
                    __func__,
                    test_obj->data_overlay.id);
         return MM_CAMERA_E_GENERAL;
     }
-    CDBG_ERROR("%s: Overlay set with overlay id: %d", __func__, test_obj->data_overlay.id);
+    LOGE("%s: Overlay set with overlay id: %d", __func__, test_obj->data_overlay.id);
 
     return rc;
 
@@ -947,11 +947,11 @@ int mm_app_close_fb(mm_camera_test_obj_t *test_obj)
     assert( ( NULL != test_obj ) && ( 0 < test_obj->fb_fd ) );
 
     if (ioctl(test_obj->fb_fd, MSMFB_OVERLAY_UNSET, &test_obj->data_overlay.id)) {
-        CDBG_ERROR("\nERROR! MSMFB_OVERLAY_UNSET failed! (Line %d)\n", __LINE__);
+        LOGE("\nERROR! MSMFB_OVERLAY_UNSET failed! (Line %d)\n", __LINE__);
     }
 
     if (ioctl(test_obj->fb_fd, FBIOPAN_DISPLAY, &test_obj->vinfo) < 0) {
-        CDBG_ERROR("ERROR: FBIOPAN_DISPLAY failed! line=%d\n", __LINE__);
+        LOGE("ERROR: FBIOPAN_DISPLAY failed! line=%d\n", __LINE__);
     }
 
     close(test_obj->fb_fd);
@@ -978,12 +978,12 @@ int mm_app_overlay_display(mm_camera_test_obj_t *test_obj, int bufferFd)
     ovdata.data.memory_id = bufferFd;
 
     if (ioctl(test_obj->fb_fd, MSMFB_OVERLAY_PLAY, &ovdata)) {
-        CDBG_ERROR("%s : MSMFB_OVERLAY_PLAY failed!", __func__);
+        LOGE("%s : MSMFB_OVERLAY_PLAY failed!", __func__);
         return MM_CAMERA_E_GENERAL;
     }
 
     if (ioctl(test_obj->fb_fd, FBIOPAN_DISPLAY, &test_obj->vinfo) < 0) {
-        CDBG_ERROR("%s : FBIOPAN_DISPLAY failed!", __func__);
+        LOGE("%s : FBIOPAN_DISPLAY failed!", __func__);
         return MM_CAMERA_E_GENERAL;
     }
 

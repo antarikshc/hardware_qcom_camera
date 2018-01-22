@@ -37,12 +37,12 @@
 #ifdef CDBG
 #undef CDBG
 #endif //#ifdef CDBG
-#define CDBG(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 2, fmt, ##args)
+#define LOGD(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 2, fmt, ##args)
 
 #ifdef CDBG_HIGH
 #undef CDBG_HIGH
 #endif //#ifdef CDBG_HIGH
-#define CDBG_HIGH(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 1, fmt, ##args)
+#define LOGH(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 1, fmt, ##args)
 
 
 namespace qcamera {
@@ -107,7 +107,7 @@ void QCameraPerfLock::lock_init()
     char value[PROPERTY_VALUE_MAX];
     int len;
 
-    CDBG("%s E", __func__);
+    LOGD("%s E", __func__);
     Mutex::Autolock lock(mLock);
 
     property_get("persist.camera.perflock.enable", value, "1");
@@ -146,7 +146,7 @@ void QCameraPerfLock::lock_init()
             ALOGE("%s: failed to perf_lock_rel function handle", __func__);
             goto cleanup;
         }
-        CDBG("%s X", __func__);
+        LOGD("%s X", __func__);
         return;
 
 cleanup:
@@ -158,7 +158,7 @@ cleanup:
             mDlHandle = NULL;
         }
     }
-    CDBG("%s X", __func__);
+    LOGD("%s X", __func__);
 }
 
 /*===========================================================================
@@ -176,7 +176,7 @@ void QCameraPerfLock::lock_deinit()
 {
     Mutex::Autolock lock(mLock);
     if (mPerfLockEnable) {
-        CDBG("%s E", __func__);
+        LOGD("%s E", __func__);
         if (mDlHandle) {
             perf_lock_acq  = NULL;
             perf_lock_rel  = NULL;
@@ -185,7 +185,7 @@ void QCameraPerfLock::lock_deinit()
             mDlHandle       = NULL;
         }
         mPerfLockEnable = 0;
-        CDBG("%s X", __func__);
+        LOGD("%s X", __func__);
     }
 }
 
@@ -252,7 +252,7 @@ int32_t QCameraPerfLock::lock_acq_timed(int32_t timer_val)
 {
     int32_t ret = -1;
 
-    CDBG("%s E", __func__);
+    LOGD("%s E", __func__);
     Mutex::Autolock lock(mLock);
 
     if (mPerfLockEnable) {
@@ -270,24 +270,24 @@ int32_t QCameraPerfLock::lock_acq_timed(int32_t timer_val)
 
         // Disable power hint when acquiring the perf lock
         if (mCurrentPowerHintEnable) {
-            CDBG_HIGH("%s mCurrentPowerHintEnable %d", __func__ ,mCurrentPowerHintEnable);
+            LOGH("%s mCurrentPowerHintEnable %d", __func__ ,mCurrentPowerHintEnable);
             powerHintInternal(mCurrentPowerHint, 0);
         }
 
         if ((NULL != perf_lock_acq) && (mPerfLockHandleTimed < 0)) {
             ret = (*perf_lock_acq)(mPerfLockHandleTimed, timer_val, perf_lock_params,
                     sizeof(perf_lock_params) / sizeof(int32_t));
-            CDBG("%s ret %d", __func__, ret);
+            LOGD("%s ret %d", __func__, ret);
             if (ret < 0) {
                 ALOGE("%s: failed to acquire lock", __func__);
             } else {
                 mPerfLockHandleTimed = ret;
             }
         }
-        CDBG("%s perf_handle_acq %d ",__func__, mPerfLockHandleTimed);
+        LOGD("%s perf_handle_acq %d ",__func__, mPerfLockHandleTimed);
     }
 
-    CDBG("%s X", __func__);
+    LOGD("%s X", __func__);
     return ret;
 }
 
@@ -308,7 +308,7 @@ int32_t QCameraPerfLock::lock_acq()
 {
     int32_t ret = -1;
 
-    CDBG("%s E", __func__);
+    LOGD("%s E", __func__);
     Mutex::Autolock lock(mLock);
 
     if (mPerfLockEnable) {
@@ -326,17 +326,17 @@ int32_t QCameraPerfLock::lock_acq()
         if ((NULL != perf_lock_acq) && (mPerfLockHandle < 0)) {
             ret = (*perf_lock_acq)(mPerfLockHandle, ONE_SEC, perf_lock_params,
                     sizeof(perf_lock_params) / sizeof(int32_t));
-            CDBG("%s ret %d", __func__, ret);
+            LOGD("%s ret %d", __func__, ret);
             if (ret < 0) {
                 ALOGE("%s: failed to acquire lock", __func__);
             } else {
                 mPerfLockHandle = ret;
             }
         }
-        CDBG("%s perf_handle_acq %d ",__func__, mPerfLockHandle);
+        LOGD("%s perf_handle_acq %d ",__func__, mPerfLockHandle);
     }
 
-    CDBG("%s X", __func__);
+    LOGD("%s X", __func__);
     return ret;
 }
 
@@ -358,12 +358,12 @@ int32_t QCameraPerfLock::lock_rel_timed()
     int ret = -1;
     Mutex::Autolock lock(mLock);
     if (mPerfLockEnable) {
-        CDBG("%s E", __func__);
+        LOGD("%s E", __func__);
         if (mPerfLockHandleTimed < 0) {
             ALOGE("%s: mPerfLockHandle < 0,check if lock is acquired", __func__);
             return ret;
         }
-        CDBG("%s perf_handle_rel %d ",__func__, mPerfLockHandleTimed);
+        LOGD("%s perf_handle_rel %d ",__func__, mPerfLockHandleTimed);
 
         if ((NULL != perf_lock_rel) && (0 <= mPerfLockHandleTimed)) {
             ret = (*perf_lock_rel)(mPerfLockHandleTimed);
@@ -376,7 +376,7 @@ int32_t QCameraPerfLock::lock_rel_timed()
         if ((mCurrentPowerHintEnable == 1) && (mTimerSet == 0)) {
             powerHintInternal(mCurrentPowerHint, mCurrentPowerHintEnable);
         }
-        CDBG("%s X", __func__);
+        LOGD("%s X", __func__);
     }
     return ret;
 }
@@ -399,12 +399,12 @@ int32_t QCameraPerfLock::lock_rel()
     int ret = -1;
     Mutex::Autolock lock(mLock);
     if (mPerfLockEnable) {
-        CDBG("%s E", __func__);
+        LOGD("%s E", __func__);
         if (mPerfLockHandle < 0) {
             ALOGE("%s: mPerfLockHandle < 0,check if lock is acquired", __func__);
             return ret;
         }
-        CDBG("%s perf_handle_rel %d ",__func__, mPerfLockHandle);
+        LOGD("%s perf_handle_rel %d ",__func__, mPerfLockHandle);
 
         if ((NULL != perf_lock_rel) && (0 <= mPerfLockHandle)) {
             ret = (*perf_lock_rel)(mPerfLockHandle);
@@ -417,7 +417,7 @@ int32_t QCameraPerfLock::lock_rel()
         if ((mCurrentPowerHintEnable == 1) && (mTimerSet == 0)) {
             powerHintInternal(mCurrentPowerHint, mCurrentPowerHintEnable);
         }
-        CDBG("%s X", __func__);
+        LOGD("%s X", __func__);
     }
     return ret;
 }

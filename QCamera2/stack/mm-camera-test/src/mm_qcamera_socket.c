@@ -121,7 +121,7 @@ static int32_t tuneserver_process_command(tuningserver_t *tsctrl,
   tuneserver_protocol_t *p = tsctrl->proto;
   int result = 0;
 
-  CDBG("%s: Current command is %d\n", __func__, p->current_cmd);
+  LOGD("%s: Current command is %d\n", __func__, p->current_cmd);
   switch (p->current_cmd) {
   case TUNESERVER_GET_LIST:
     if(tuneserver_send_command_ack(CURRENT_COMMAND_ACK_SUCCESS, tsctrl)) {
@@ -314,7 +314,7 @@ static ssize_t tuneserver_ack_onaccept_initprotocol(tuningserver_t *tsctrl)
   tsctrl->proto->recv_buf       = NULL;
   tsctrl->proto->send_buf       = NULL;
 
-  CDBG("%s end\n", __func__);
+  LOGD("%s end\n", __func__);
 
   return rc;
 }
@@ -388,7 +388,7 @@ static int32_t prevserver_process_command(
   int result = 0;
   eztune_prevcmd_rsp *rsp_ptr=NULL, *rspn_ptr=NULL, *head_ptr=NULL;
 
-  CDBG("%s: Current command is %d\n", __func__, p->current_cmd);
+  LOGD("%s: Current command is %d\n", __func__, p->current_cmd);
   switch (p->current_cmd) {
   case TUNE_PREV_GET_INFO:
     result = tuneserver_preview_getinfo(tsctrl, send_buf, send_len);
@@ -505,7 +505,7 @@ static int32_t prevserver_process_client_message(void *recv_buffer,
 
   switch (p->next_recv_code) {
   case TUNE_PREV_RECV_COMMAND:
-    CDBG("%s  %d\n", __func__, __LINE__);
+    LOGD("%s  %d\n", __func__, __LINE__);
     p->current_cmd = *(uint16_t *)recv_buffer;
     if(p->current_cmd != TUNE_PREV_CH_CNK_SIZE) {
       rc = prevserver_process_command(tsctrl,
@@ -514,10 +514,10 @@ static int32_t prevserver_process_client_message(void *recv_buffer,
     }
     p->next_recv_code = TUNE_PREV_RECV_NEWCNKSIZE;
     p->next_recv_len = sizeof(uint32_t);
-    CDBG("%s TUNE_PREV_COMMAND X\n", __func__);
+    LOGD("%s TUNE_PREV_COMMAND X\n", __func__);
     break;
   case TUNE_PREV_RECV_NEWCNKSIZE:
-    CDBG("%s  %d\n", __func__, __LINE__);
+    LOGD("%s  %d\n", __func__, __LINE__);
     p->new_cnk_size = *(uint32_t *)recv_buffer;
     p->next_recv_code = TUNE_PREV_RECV_COMMAND;
     p->next_recv_len  = 2;
@@ -598,7 +598,7 @@ int tunning_server_socket_listen(const char* ip_addr, uint16_t port)
     return sock_fd;
   }
 
-  CDBG_HIGH("%s. sock_fd: %d, listen at port: %d\n", __func__, sock_fd, port);
+  LOGH("%s. sock_fd: %d, listen at port: %d\n", __func__, sock_fd, port);
 
   return sock_fd;
 }
@@ -639,7 +639,7 @@ void *eztune_proc(void *data)
     return NULL;
   }
   num_fds = TUNESERVER_MAX(server_socket, prev_server_socket);
-  CDBG_HIGH("num_fds = %d\n", num_fds);
+  LOGH("num_fds = %d\n", num_fds);
 
   do {
     FD_ZERO(&tsfds);
@@ -663,7 +663,7 @@ void *eztune_proc(void *data)
      ** (1) CHROMATIX SERVER
      */
     if (FD_ISSET(server_socket, &tsfds)) {
-      CDBG("Receiving New client connection\n");
+      LOGD("Receiving New client connection\n");
 
       client_socket = accept(server_socket,
         &addr_client_inet.addr, &addr_client_len);
@@ -711,7 +711,7 @@ void *eztune_proc(void *data)
       /*Receive message and process it*/
       recv_bytes = recv(client_socket, (void *)buf,
         lib_handle->tsctrl.proto->next_recv_len, 0);
-      CDBG("Receive %lld bytes \n", (long long int) recv_bytes);
+      LOGD("Receive %lld bytes \n", (long long int) recv_bytes);
 
       if (recv_bytes == -1) {
         ALOGE("%s: Receive failed with error %s\n", __func__, strerror(errno));
@@ -730,7 +730,7 @@ void *eztune_proc(void *data)
         client_socket = -1;
         //tuneserver_check_status(&tsctrl);
       } else {
-        CDBG("%s: Processing socket command\n", __func__);
+        LOGD("%s: Processing socket command\n", __func__);
 
         result = tuneserver_process_client_message(buf, &lib_handle->tsctrl);
 
@@ -752,7 +752,7 @@ void *eztune_proc(void *data)
      ** (2) PREVIEW SERVER
      */
     if (FD_ISSET(prev_server_socket, &tsfds)) {
-      CDBG("Receiving New Preview client connection\n");
+      LOGD("Receiving New Preview client connection\n");
 
       prev_client_socket = accept(prev_server_socket,
         &addr_client_inet.addr, &addr_client_len);
@@ -763,7 +763,7 @@ void *eztune_proc(void *data)
 
       lib_handle->tsctrl.pr_clientsocket_id = prev_client_socket;
 
-      CDBG("Accepted a new connection, fd(%d)\n", prev_client_socket);
+      LOGD("Accepted a new connection, fd(%d)\n", prev_client_socket);
       num_fds = TUNESERVER_MAX(num_fds, prev_client_socket);
 
       // start camera
@@ -781,7 +781,7 @@ void *eztune_proc(void *data)
       dim.width = DEFAULT_PREVIEW_WIDTH;
       dim.height = DEFAULT_PREVIEW_HEIGHT;
 
-      CDBG("preview dimension info: w(%d), h(%d)\n", dim.width, dim.height);
+      LOGD("preview dimension info: w(%d), h(%d)\n", dim.width, dim.height);
       // we have to make sure that camera is running, before init connection,
       // because we need to know the frame size for allocating the memory.
       prevserver_init_protocol(&lib_handle->tsctrl);
@@ -800,8 +800,8 @@ void *eztune_proc(void *data)
       recv_bytes = recv(prev_client_socket, (void *)buf,
         lib_handle->tsctrl.pr_proto->next_recv_len, 0);
 
-      CDBG("%s prev_client_socket=%d\n", __func__, prev_client_socket);
-      CDBG("%s next_recv_len=%d\n", __func__, buf[0]+buf[1]*256);
+      LOGD("%s prev_client_socket=%d\n", __func__, prev_client_socket);
+      LOGD("%s next_recv_len=%d\n", __func__, buf[0]+buf[1]*256);
 
       if (recv_bytes <= 0) {
         if (recv_bytes == 0) {

@@ -117,7 +117,7 @@ int32_t QCameraStream::get_bufs_deffered(
     *initial_reg_flag   = stream->mRegFlags;
     *num_bufs           = stream->mNumBufs;
     *bufs               = stream->mBufDefs;
-    CDBG_HIGH("%s: stream type: %d, mRegFlags: %p, numBufs: %d",
+    LOGH("%s: stream type: %d, mRegFlags: %p, numBufs: %d",
             __func__, stream->getMyType(), stream->mRegFlags, stream->mNumBufs);
     return NO_ERROR;
 }
@@ -875,11 +875,11 @@ int32_t QCameraStream::processZoomDone(preview_stream_ops_t *previewWindow,
  *==========================================================================*/
 int32_t QCameraStream::processDataNotify(mm_camera_super_buf_t *frame)
 {
-    CDBG("%s:\n", __func__);
+    LOGD("%s:\n", __func__);
     if (mDataQ.enqueue((void *)frame)) {
         return mProcTh.sendCmd(CAMERA_CMD_TYPE_DO_NEXT_JOB, FALSE, FALSE);
     } else {
-        CDBG_HIGH("%s: Stream thread is not active, no ops here", __func__);
+        LOGH("%s: Stream thread is not active, no ops here", __func__);
         bufDone(frame->bufs[0]->buf_idx);
         free(frame);
         return NO_ERROR;
@@ -901,7 +901,7 @@ int32_t QCameraStream::processDataNotify(mm_camera_super_buf_t *frame)
 void QCameraStream::dataNotifyCB(mm_camera_super_buf_t *recvd_frame,
                                  void *userdata)
 {
-    CDBG("%s:\n", __func__);
+    LOGD("%s:\n", __func__);
     QCameraStream* stream = (QCameraStream *)userdata;
     if (stream == NULL ||
         recvd_frame == NULL ||
@@ -941,7 +941,7 @@ void *QCameraStream::dataProcRoutine(void *data)
     QCameraCmdThread *cmdThread = &pme->mProcTh;
     cmdThread->setName("CAM_strmDatProc");
 
-    CDBG("%s: E", __func__);
+    LOGD("%s: E", __func__);
     do {
         do {
             ret = cam_sem_wait(&cmdThread->cmd_sem);
@@ -957,7 +957,7 @@ void *QCameraStream::dataProcRoutine(void *data)
         switch (cmd) {
         case CAMERA_CMD_TYPE_DO_NEXT_JOB:
             {
-                CDBG_HIGH("%s: Do next job", __func__);
+                LOGH("%s: Do next job", __func__);
                 mm_camera_super_buf_t *frame =
                     (mm_camera_super_buf_t *)pme->mDataQ.dequeue();
                 if (NULL != frame) {
@@ -972,7 +972,7 @@ void *QCameraStream::dataProcRoutine(void *data)
             }
             break;
         case CAMERA_CMD_TYPE_EXIT:
-            CDBG_HIGH("%s: Exit", __func__);
+            LOGH("%s: Exit", __func__);
             /* flush data buf queue */
             pme->mDataQ.flush();
             running = 0;
@@ -981,7 +981,7 @@ void *QCameraStream::dataProcRoutine(void *data)
             break;
         }
     } while (running);
-    CDBG_HIGH("%s: X", __func__);
+    LOGH("%s: X", __func__);
     return NULL;
 }
 
@@ -1055,7 +1055,7 @@ int32_t QCameraStream::bufDone(const void *opaque, bool isMetaData)
             ALOGE("%s: Cannot find buf for opaque data = %p", __func__, opaque);
             return BAD_INDEX;
         }
-        CDBG_HIGH("%s: Buffer Index = %d, Frame Idx = %d", __func__, index,
+        LOGH("%s: Buffer Index = %d, Frame Idx = %d", __func__, index,
                 mBufDefs[index].frame_idx);
     }
     rc = bufDone((uint32_t)index);
@@ -1211,14 +1211,14 @@ int32_t QCameraStream::getBufs(cam_frame_len_offset_t *offset,
     *num_bufs = mNumBufs;
     *initial_reg_flag = regFlags;
     *bufs = mBufDefs;
-    CDBG_HIGH("%s: stream type: %d, mRegFlags: %p, numBufs: %d",
+    LOGH("%s: stream type: %d, mRegFlags: %p, numBufs: %d",
             __func__, mStreamInfo->stream_type, regFlags, mNumBufs);
 
     if (mNumBufsNeedAlloc > 0) {
         pthread_mutex_lock(&m_lock);
         wait_for_cond = TRUE;
         pthread_mutex_unlock(&m_lock);
-        CDBG_HIGH("%s: Still need to allocate %d buffers",
+        LOGH("%s: Still need to allocate %d buffers",
               __func__, mNumBufsNeedAlloc);
         // remember memops table
         m_MemOpsTbl = *ops_tbl;
@@ -1370,7 +1370,7 @@ int32_t QCameraStream::allocateBatchBufs(cam_frame_len_offset_t *offset,
 
     mFrameLenOffset = *offset;
 
-    CDBG_HIGH("%s : Batch Buffer allocation stream type = %d", __func__, getMyType());
+    LOGH("%s : Batch Buffer allocation stream type = %d", __func__, getMyType());
 
     //Allocate stream batch buffer
     mStreamBatchBufs = mAllocator.allocateStreamUserBuf (mStreamInfo);
@@ -1504,7 +1504,7 @@ int32_t QCameraStream::allocateBatchBufs(cam_frame_len_offset_t *offset,
     *num_bufs = mNumBufs;
     *initial_reg_flag = regFlags;
     *bufs = mBufDefs;
-    CDBG_HIGH("%s: stream type: %d, numBufs: %d mNumPlaneBufs: %d",
+    LOGH("%s: stream type: %d, numBufs: %d mNumPlaneBufs: %d",
             __func__, mStreamInfo->stream_type, mNumBufs, mNumPlaneBufs);
 
     return NO_ERROR;
@@ -1626,7 +1626,7 @@ void *QCameraStream::BufAllocRoutine(void *data)
     QCameraStream *pme = (QCameraStream *)data;
     int32_t rc = NO_ERROR;
 
-    CDBG_HIGH("%s: E", __func__);
+    LOGH("%s: E", __func__);
     pme->cond_wait();
     if (pme->mNumBufsNeedAlloc > 0) {
         uint8_t numBufAlloc = (uint8_t)(pme->mNumBufs - pme->mNumBufsNeedAlloc);
@@ -1655,7 +1655,7 @@ void *QCameraStream::BufAllocRoutine(void *data)
             pme->mNumBufsNeedAlloc = 0;
         }
     }
-    CDBG_HIGH("%s: X", __func__);
+    LOGH("%s: X", __func__);
     return NULL;
 }
 
@@ -1708,10 +1708,10 @@ int32_t QCameraStream::putBufs(mm_camera_map_unmap_ops_tbl_t *ops_tbl)
     int rc = NO_ERROR;
 
     if (mBufAllocPid != 0) {
-        CDBG_HIGH("%s: wait for buf allocation thread dead", __func__);
+        LOGH("%s: wait for buf allocation thread dead", __func__);
         pthread_join(mBufAllocPid, NULL);
         mBufAllocPid = 0;
-        CDBG_HIGH("%s: return from buf allocation thread", __func__);
+        LOGH("%s: return from buf allocation thread", __func__);
     }
 
     for (uint32_t i = 0; i < mNumBufs; i++) {

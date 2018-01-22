@@ -68,7 +68,7 @@ inline void __null_log(int, const char *, const char *, ...) {}
 
 #ifdef CDBG
 #undef CDBG
-#define CDBG(...) do{} while(0)
+#define LOGD(...) do{} while(0)
 #endif
 
 #else
@@ -77,12 +77,12 @@ inline void __null_log(int, const char *, const char *, ...) {}
 #ifdef CDBG
 #undef CDBG
 #endif //#ifdef CDBG
-#define CDBG(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 2, fmt, ##args)
+#define LOGD(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 2, fmt, ##args)
 
 #ifdef CDBG_HIGH
 #undef CDBG_HIGH
 #endif //#ifdef CDBG_HIGH
-#define CDBG_HIGH(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 1, fmt, ##args)
+#define LOGH(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 1, fmt, ##args)
 
 #endif // DISABLE_DEBUG_LOG
 

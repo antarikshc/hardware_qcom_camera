@@ -51,7 +51,7 @@ extern volatile uint32_t gMmJpegIntfLogLevel;
     #define ALOGE CDBG
   #endif
   #undef CDBG
-  #define CDBG(fmt, args...) do{}while(0)
+  #define LOGD(fmt, args...) do{}while(0)
 #else
   #ifdef _ANDROID_
     #undef LOG_NIDEBUG
@@ -59,19 +59,19 @@ extern volatile uint32_t gMmJpegIntfLogLevel;
     #define LOG_NIDEBUG 0
     #define LOG_TAG "mm-jpeg-intf"
     #include <utils/Log.h>
-    #define CDBG(fmt, args...) ALOGD_IF(gMmJpegIntfLogLevel >= 2, fmt, ##args)
+    #define LOGD(fmt, args...) ALOGD_IF(gMmJpegIntfLogLevel >= 2, fmt, ##args)
   #else
     #include <stdio.h>
-    #define CDBG(fmt, args...) fprintf(stderr, fmt, ##args)
+    #define LOGD(fmt, args...) fprintf(stderr, fmt, ##args)
     #define ALOGE(fmt, args...) fprintf(stderr, fmt, ##args)
   #endif
 #endif
 
 #ifdef _ANDROID_
-  #define CDBG_HIGH(fmt, args...)   ALOGD_IF(gMmJpegIntfLogLevel >= 1, fmt, ##args)
-  #define CDBG_ERROR(fmt, args...)  ALOGE(fmt, ##args)
+  #define LOGH(fmt, args...)   ALOGD_IF(gMmJpegIntfLogLevel >= 1, fmt, ##args)
+  #define LOGE(fmt, args...)  ALOGE(fmt, ##args)
 #else
-  #define CDBG_HIGH(fmt, args...) fprintf(stderr, fmt, ##args)
-  #define CDBG_ERROR(fmt, args...) fprintf(stderr, fmt, ##args)
+  #define LOGH(fmt, args...) fprintf(stderr, fmt, ##args)
+  #define LOGE(fmt, args...) fprintf(stderr, fmt, ##args)
 #endif
 #endif /* __MM_JPEG_DBG_H__ */
