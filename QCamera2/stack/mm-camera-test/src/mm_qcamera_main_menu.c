@@ -1107,10 +1107,10 @@ int decrease_saturation (mm_camera_lib_handle *lib_handle) {
 
 int take_jpeg_snapshot(mm_camera_test_obj_t *test_obj, int is_burst_mode)
 {
-  CDBG_HIGH("\nEnter take_jpeg_snapshot!!\n");
+  // CDBG_HIGH("\nEnter take_jpeg_snapshot!!\n");
   int rc = mm_app_take_picture (test_obj, (uint8_t)is_burst_mode);
   if (MM_CAMERA_OK != rc) {
-    CDBG_ERROR("%s: mm_app_take_picture() err=%d\n", __func__, rc);
+    // CDBG_ERROR("%s: mm_app_take_picture() err=%d\n", __func__, rc);
   }
   return rc;
 }
@@ -1583,7 +1583,7 @@ int filter_resolutions(mm_camera_lib_handle *lib_handle,
 
     rc = mm_camera_lib_get_caps(lib_handle, &camera_cap);
     if ( MM_CAMERA_OK != rc ) {
-        CDBG_ERROR("%s:mm_camera_lib_get_caps() err=%d\n", __func__, rc);
+        // CDBG_ERROR("%s:mm_camera_lib_get_caps() err=%d\n", __func__, rc);
         return -1;
     }
 
@@ -1628,7 +1628,7 @@ int enableAFR(mm_camera_lib_handle *lib_handle)
 
     rc = mm_camera_lib_get_caps(lib_handle, &cap);
     if ( MM_CAMERA_OK != rc ) {
-        CDBG_ERROR("%s:mm_camera_lib_get_caps() err=%d\n", __func__, rc);
+        // CDBG_ERROR("%s:mm_camera_lib_get_caps() err=%d\n", __func__, rc);
         return rc;
     }
 
@@ -1643,11 +1643,11 @@ int enableAFR(mm_camera_lib_handle *lib_handle)
                                     &cap.fps_ranges_tbl[j],
                                     NULL);
 
-    CDBG_ERROR("%s : FPS range [%5.2f:%5.2f] rc = %d",
+    /* CDBG_ERROR("%s : FPS range [%5.2f:%5.2f] rc = %d",
               __func__,
               cap.fps_ranges_tbl[j].min_fps,
               cap.fps_ranges_tbl[j].max_fps,
-              rc);
+              rc); */
 
     return rc;
 }
