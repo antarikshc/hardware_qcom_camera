@@ -2553,7 +2553,7 @@ int32_t mm_channel_superbuf_comp_and_enqueue(
 
                 if ((queue->attr.priority == MM_CAMERA_SUPER_BUF_PRIORITY_LOW)
                         && (buf_info->buf->stream_type != CAM_STREAM_TYPE_METADATA)) {
-                    CDBG_ERROR ("%s : No metadata matching for frame = %d",
+                    LOGE("%s : No metadata matching for frame = %d",
                             __func__, buf_info->frame_idx);
                     queue->nomatch_frame_id = buf_info->frame_idx;
                 }
