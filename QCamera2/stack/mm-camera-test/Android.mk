@@ -6,7 +6,7 @@ include $(LOCAL_PATH)/../../../common.mk
 include $(CLEAR_VARS)
 
 # b/24171136 many files not compiling with clang/llvm yet
-LOCAL_CLANG := false
+#LOCAL_CLANG := false
 
 LOCAL_CFLAGS:= \
         -DAMSS_VERSION=$(AMSS_VERSION) \
@@ -238,3 +238,5 @@ LOCAL_MODULE_TAGS := tests
 include $(BUILD_NATIVE_TEST)
 
 LOCAL_PATH := $(OLD_LOCAL_PATH)
+
+LOCAL_LDLIBS := -ldl -llog
