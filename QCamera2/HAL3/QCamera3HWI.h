@@ -44,14 +44,14 @@ extern "C" {
 #include <mm_camera_interface.h>
 #include <mm_jpeg_interface.h>
 }
-#ifdef CDBG
-#undef CDBG
-#endif //#ifdef CDBG
+#ifdef LOGD
+#undef LOGD
+#endif //#ifdef LOGD
 #define LOGD(fmt, args...) ALOGD_IF(gCamHal3LogLevel >= 2, fmt, ##args)
 
-#ifdef CDBG_HIGH
-#undef CDBG_HIGH
-#endif //#ifdef CDBG_HIGH
+#ifdef LOGH
+#undef LOGH
+#endif //#ifdef LOGH
 #define LOGH(fmt, args...) ALOGD_IF(gCamHal3LogLevel >= 1, fmt, ##args)
 
 #ifdef CDBG_FATAL_IF

@@ -1436,7 +1436,7 @@ int32_t QCameraStream::allocateBatchBufs(cam_frame_len_offset_t *offset,
         }
     }
 
-    CDBG ("%s: BATCH Buf Count = %d, Plane Buf Cnt = %d", __func__,
+    LOGD("%s: BATCH Buf Count = %d, Plane Buf Cnt = %d", __func__,
             mNumBufs, mNumPlaneBufs);
 
     //regFlags array is allocated by us, but consumed and freed by mm-camera-interface

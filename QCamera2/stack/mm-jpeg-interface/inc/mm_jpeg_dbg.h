@@ -34,9 +34,9 @@
 #define MINIMUM_JPEG_LOG_LEVEL 1
 
 /* Choose debug log level. This will not affect the error logs
-   0: turns off CDBG and CDBG_HIGH logs
-   1: turns-on CDBG_HIGH logs
-   2: turns-on CDBG_HIGH and CDBG logs */
+   0: turns off LOGD and LOGH logs
+   1: turns-on LOGH logs
+   2: turns-on LOGH and LOGD logs */
 extern volatile uint32_t gMmJpegIntfLogLevel;
 
 #ifndef LOG_DEBUG
@@ -48,9 +48,9 @@ extern volatile uint32_t gMmJpegIntfLogLevel;
     #include <utils/Log.h>
   #else
     #include <stdio.h>
-    #define ALOGE CDBG
+    #define ALOGE LOGD
   #endif
-  #undef CDBG
+  #undef LOGD
   #define LOGD(fmt, args...) do{}while(0)
 #else
   #ifdef _ANDROID_

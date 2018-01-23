@@ -34,14 +34,14 @@
 #include <utils/Log.h>
 #include "QCameraPerf.h"
 
-#ifdef CDBG
-#undef CDBG
-#endif //#ifdef CDBG
+#ifdef LOGD
+#undef LOGD
+#endif //#ifdef LOGD
 #define LOGD(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 2, fmt, ##args)
 
-#ifdef CDBG_HIGH
-#undef CDBG_HIGH
-#endif //#ifdef CDBG_HIGH
+#ifdef LOGH
+#undef LOGH
+#endif //#ifdef LOGH
 #define LOGH(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 1, fmt, ##args)
 
 

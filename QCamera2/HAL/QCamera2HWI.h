@@ -66,22 +66,22 @@ inline void __null_log(int, const char *, const char *, ...) {}
 #define ALOGI(...) do { __null_log(0, LOG_TAG,__VA_ARGS__); } while (0)
 #endif
 
-#ifdef CDBG
-#undef CDBG
+#ifdef LOGD
+#undef LOGD
 #define LOGD(...) do{} while(0)
 #endif
 
 #else
 
 
-#ifdef CDBG
-#undef CDBG
-#endif //#ifdef CDBG
+#ifdef LOGD
+#undef LOGD
+#endif //#ifdef LOGD
 #define LOGD(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 2, fmt, ##args)
 
-#ifdef CDBG_HIGH
-#undef CDBG_HIGH
-#endif //#ifdef CDBG_HIGH
+#ifdef LOGH
+#undef LOGH
+#endif //#ifdef LOGH
 #define LOGH(fmt, args...) ALOGD_IF(gCamHalLogLevel >= 1, fmt, ##args)
 
 #endif // DISABLE_DEBUG_LOG

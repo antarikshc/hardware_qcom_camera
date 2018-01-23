@@ -41,9 +41,9 @@
     #include <utils/Log.h>
   #else
     #include <stdio.h>
-    #define ALOGE CDBG
+    #define ALOGE LOGD
   #endif
-  #undef CDBG
+  #undef LOGD
   #define LOGD(fmt, args...) do{}while(0)
   #define LOGE(fmt, args...) ALOGE(fmt, ##args)
 #else

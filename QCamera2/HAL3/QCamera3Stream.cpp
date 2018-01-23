@@ -1172,7 +1172,7 @@ int32_t QCamera3Stream::getBatchBufs(
         }
     }
 
-    CDBG ("%s: batch bufs successfully mmapped = %d",
+    LOGD("%s: batch bufs successfully mmapped = %d",
             __func__, mNumBatchBufs);
 
     /* regFlags array is allocated here, but consumed and freed by
