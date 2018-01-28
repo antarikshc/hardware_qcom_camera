@@ -51,6 +51,7 @@ LOCAL_CFLAGS += -DDEFAULT_DENOISE_MODE_ON -DHAL3
 
 LOCAL_C_INCLUDES := \
         $(LOCAL_PATH)/stack/common \
+        frameworks/native/include \
         frameworks/native/include/media/hardware \
         frameworks/native/include/media/openmax \
         hardware/qcom/media/msm8974/libstagefrighthw \
@@ -77,6 +78,8 @@ endif
 LOCAL_SHARED_LIBRARIES := libcamera_client liblog libhardware libutils libcutils libdl libsync
 LOCAL_SHARED_LIBRARIES += libmmcamera_interface libmmjpeg_interface libui libcamera_metadata
 LOCAL_SHARED_LIBRARIES += libqdMetaData libstagefrighthw
+LOCAL_SHARED_LIBRARIES += libhidltransport libsensor android.hidl.token@1.0-utils android.hardware.graphics.bufferqueue@1.0
+LOCAL_STATIC_LIBRARIES := libarect
 
 LOCAL_MODULE_RELATIVE_PATH := hw
 LOCAL_MODULE := camera.$(TARGET_BOARD_PLATFORM)
